@@ -1,0 +1,78 @@
+Attribute VB_Name = "StringCheck"
+Attribute VB_Description = "Sub and functions to check if a string as a particular format (zip code, phone number, mail address, ...)"
+Option Explicit
+
+'Function to check if string is an email address
+'Need to activate the reference "Microsoft VBScript Regular Expressions 5.5"
+Public Function isMail(value As String) As Boolean
+Attribute isMail.VB_Description = "Function to check if string is an email address\r\nNeed to activate the reference ""Microsoft VBScript Regular Expressions 5.5"""
+    Dim reg As New VBScript_RegExp_55.RegExp
+    
+    reg.Pattern = "^(\w)+((\w)|(\.\w)|(\-\w)|(_))*@(\w)+((\w)|(\.\w)|(\-\w)|(_))*(\.[\w]{2,3})$"
+    isMail = reg.test(value)
+    Set reg = Nothing
+End Function
+
+'Function to check if string is a valid local phone number (No formating, only 10 digits)
+'Need to activate the reference "Microsoft VBScript Regular Expressions 5.5"
+Public Function isLocalPhone(value As String) As Boolean
+Attribute isLocalPhone.VB_Description = "Function to check if string is a valid local phone number (No formating, only 10 digits)\r\nNeed to activate the reference ""Microsoft VBScript Regular Expressions 5.5"""
+    Dim reg As New VBScript_RegExp_55.RegExp
+    
+    reg.Pattern = "^0[1-9](\d){8}$"
+    isLocalPhone = reg.test(value)
+    Set reg = Nothing
+End Function
+
+'Function to check if string is a valid local french phone number (10 consecutive digits, or 10 digits in pairs separated by . 'dots' or spaces)
+'Need to activate the reference "Microsoft VBScript Regular Expressions 5.5"
+Public Function isFrenchPhone(value As String) As Boolean
+Attribute isFrenchPhone.VB_Description = "Function to check if string is a valid local french phone number (10 consecutive digits, or 10 digits in pairs separated by . 'dots' or spaces)\r\nNeed to activate the reference ""Microsoft VBScript Regular Expressions 5.5"""
+    Dim reg As New VBScript_RegExp_55.RegExp
+    
+    reg.Pattern = "^0[1-9](((\.)|( ))(\d\d)){4}$"
+    
+    isFrenchPhone = (reg.test(value) Or isLocalPhone(value))
+    Set reg = Nothing
+End Function
+
+'Function to check if string is a valid local US phone number
+'Need to activate the reference "Microsoft VBScript Regular Expressions 5.5"
+Public Function isUSAPhone(value As String) As Boolean
+Attribute isUSAPhone.VB_Description = "Function to check if string is a valid local US phone number\r\nNeed to activate the reference ""Microsoft VBScript Regular Expressions 5.5"""
+    Dim reg As New VBScript_RegExp_55.RegExp
+    
+    reg.Pattern = "^([0-9]( |-)?)?(\(?[0-9]{3}\)?|[0-9]{3})( |-)?([0-9]{3}( |-)?[0-9]{4}|[a-zA-Z0-9]{7})$"
+    isUSAPhone = reg.test(value)
+    Set reg = Nothing
+End Function
+
+'Function to check if string is a valid international phone number (no specifications for geographics areas and country phone plans)
+'Need to activate the reference "Microsoft VBScript Regular Expressions 5.5"
+Public Function isInternationalPhone(value As String) As Boolean
+Attribute isInternationalPhone.VB_Description = "Function to check if string is a valid international phone number (no specifications for geographics areas and country phone plans)\r\nNeed to activate the reference ""Microsoft VBScript Regular Expressions 5.5"""
+    Dim reg As New VBScript_RegExp_55.RegExp
+    
+    reg.Pattern = "^(\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|2[98654321]\d|" & _
+        "9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,14})$"
+    isinternationatlphone = reg.test(value)
+    Set reg = Nothing
+End Function
+
+'Function to check if string is a valid phone number
+'Using isLocalPhone and isInternationalPhone functions (implemented before)
+Public Function isPhone(value As String) As Boolean
+Attribute isPhone.VB_Description = "Function to check if string is a valid phone number\r\nUsing isLocalPhone and isInternationalPhone functions (implemented before)"
+    isPhone = (isinternationphone(value) Or isLocalPhone(value))
+End Function
+
+'Function to check if string is a valid french postal code
+'Need to activate the reference "Microsoft VBScript Regular Expressions 5.5"
+Public Function isFrenchPostalCode(value As String) As Boolean
+Attribute isFrenchPostalCode.VB_Description = "Function to check if string is a valid french postal code\r\nNeed to activate the reference ""Microsoft VBScript Regular Expressions 5.5"""
+    Dim reg As New VBScript_RegExp_55.RegExp
+    
+    reg.Pattern = "^(\d){5}$"
+    isFrenchPostalCode = reg.test(value)
+    Set reg = Nothing
+End Function
