@@ -14,7 +14,7 @@ End Function
 'Default ubound for array is 0 and max index is ubound-1
 Public Sub intSortAsc(ByRef arr() As Integer)
 Attribute intSortAsc.VB_Description = "Sub to sort an array of integer integer ascending\r\nNeeds the ""intQuickSortAsc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
-    Call intQuickSortAsc(arr, 0, UBound(arr) - 1)
+    Call intQuickSortAsc(arr, 0, UBound(arr))
 End Sub
 
 'Sub to sort an array of integer integer descending
@@ -22,7 +22,7 @@ End Sub
 'Default ubound for array is 0 and max index is ubound-1
 Public Sub intSortDesc(ByRef arr() As Integer)
 Attribute intSortDesc.VB_Description = "Sub to sort an array of integer integer descending\r\nNeeds the ""intQuickSortDesc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
-    Call intQuickSortDesc(arr, 0, UBound(arr) - 1)
+    Call intQuickSortDesc(arr, 0, UBound(arr))
 End Sub
 
 'Recursive quicksort for ascending sort of integer int array
@@ -94,7 +94,7 @@ Attribute sumIntArray.VB_Description = "Function to sum all values in integer ar
     Dim i As Long
     
     sumIntArray = 0
-    For i = 0 To UBound(arr) - 1
+    For i = 0 To UBound(arr)
         sumIntArray = sumIntArray + arr(i)
     Next i
 End Function
@@ -112,7 +112,7 @@ Attribute maxInteger.VB_Description = "Function to return the max of Integer arr
     Dim i As Long
     
     maxInteger = arr(0)
-    For i = 1 To UBound(arr) - 1
+    For i = 1 To UBound(arr)
         If maxInteger < arr(i) Then maxInteger = arr(i)
     Next i
 End Function
@@ -123,7 +123,7 @@ Attribute minInteger.VB_Description = "Function to return the min of Integer arr
     Dim i As Long
     
     minInteger = arr(0)
-    For i = 1 To UBound(arr) - 1
+    For i = 1 To UBound(arr)
         If minInteger > arr(i) Then minInteger = arr(i)
     Next i
 End Function
@@ -134,7 +134,7 @@ Attribute findInt.VB_Description = "Function to find an int value in int array (
     Dim i As Long
     
     findInt = -1
-    For i = 0 To UBound(arr) - 1
+    For i = 0 To UBound(arr)
         If arr(i) = val Then
             findInt = i
             Exit Function

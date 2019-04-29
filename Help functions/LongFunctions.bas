@@ -14,7 +14,7 @@ End Function
 'Default ubound for array is 0 and max index is ubound-1
 Public Sub longSortAsc(ByRef arr() As Long)
 Attribute longSortAsc.VB_Description = "Sub to sort an array of long integer ascending\r\nNeeds the ""longQuickSortAsc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
-    Call longQuickSortAsc(arr, 0, UBound(arr) - 1)
+    Call longQuickSortAsc(arr, 0, UBound(arr))
 End Sub
 
 'Sub to sort an array of long integer descending
@@ -22,7 +22,7 @@ End Sub
 'Default ubound for array is 0 and max index is ubound-1
 Public Sub longSortDesc(ByRef arr() As Long)
 Attribute longSortDesc.VB_Description = "Sub to sort an array of long integer descending\r\nNeeds the ""longQuickSortDesc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
-    Call longQuickSortDesc(arr, 0, UBound(arr) - 1)
+    Call longQuickSortDesc(arr, 0, UBound(arr))
 End Sub
 
 'Recursive quicksort for ascending sort of long int array
@@ -94,7 +94,7 @@ Attribute sumLongArray.VB_Description = "Function to sum all values in long arra
     Dim i As Long
     
     sumLongArray = 0
-    For i = 0 To UBound(arr) - 1
+    For i = 0 To UBound(arr)
         sumLongArray = sumLongArray + arr(i)
     Next i
 End Function
@@ -112,7 +112,7 @@ Attribute maxLong.VB_Description = "Function to return the max of Long array"
     Dim i As Long
     
     maxLong = arr(0)
-    For i = 1 To UBound(arr) - 1
+    For i = 1 To UBound(arr)
         If maxLong < arr(i) Then maxLong = arr(i)
     Next i
 End Function
@@ -123,7 +123,7 @@ Attribute minLong.VB_Description = "Function to return the min of Long array"
     Dim i As Long
     
     minLong = arr(0)
-    For i = 1 To UBound(arr) - 1
+    For i = 1 To UBound(arr)
         If minLong > arr(i) Then minLong = arr(i)
     Next i
 End Function
@@ -134,7 +134,7 @@ Attribute findLong.VB_Description = "Function to find a Long value in Long array
     Dim i As Long
     
     findLong = -1
-    For i = 0 To UBound(arr) - 1
+    For i = 0 To UBound(arr)
         If arr(i) = val Then
             findLong = i
             Exit Function

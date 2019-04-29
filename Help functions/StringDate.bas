@@ -1,4 +1,5 @@
 Attribute VB_Name = "StringDate"
+Attribute VB_Description = "Functions for String about date\n"
 Option Explicit
 
 'Function to check if the string a correct date (format dd/mm/yyyy HH:mm:ss)
@@ -6,6 +7,7 @@ Option Explicit
 'Dates can be written without the time or time without date (respectively dd/mm/yyyy or HH:mm:ss)
 'Need to activate the reference "Microsoft VBScrpt Regular Expressions 5.5"
 Public Function isValidDate(value As String) As Boolean
+Attribute isValidDate.VB_Description = "Check if string is valid date"
     Dim reg As New VBScript_RegExp_55.RegExp
     
     reg.Pattern = "^(?=\d)(?:(?!(?:(?:0?[5-9]|1[0-4])(?:\.|-|\/)10(?:\.|-|\/)(?:1582))|" & _

@@ -27,7 +27,7 @@ End Function
 'Default ubound for array is 0 and max index is ubound-1
 Public Sub singleSortAsc(ByRef arr() As Single)
 Attribute singleSortAsc.VB_Description = "Sub to sort an array of single ascending\r\nNeeds the ""singleQuickSortAsc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
-    Call singleQuickSortAsc(arr, 0, UBound(arr) - 1)
+    Call singleQuickSortAsc(arr, 0, UBound(arr))
 End Sub
 
 'Sub to sort an array of single descending
@@ -35,7 +35,7 @@ End Sub
 'Default ubound for array is 0 and max index is ubound-1
 Public Sub singleSortDesc(ByRef arr() As Single)
 Attribute singleSortDesc.VB_Description = "Sub to sort an array of single descending\r\nNeeds the ""singleQuickSortDesc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
-    Call singleQuickSortDesc(arr, 0, UBound(arr) - 1)
+    Call singleQuickSortDesc(arr, 0, UBound(arr))
 End Sub
 
 'Recursive quicksort for ascending sort of single array
@@ -107,7 +107,7 @@ Attribute sumSingleArray.VB_Description = "Function to sum all values in single 
     Dim i As Long
     
     sumSingleArray = 0
-    For i = 0 To UBound(arr) - 1
+    For i = 0 To UBound(arr)
         sumSingleArray = sumSingleArray + arr(i)
     Next i
 End Function
@@ -125,7 +125,7 @@ Attribute maxSingle.VB_Description = "Function to return the max of single array
     Dim i As Long
     
     maxSingle = arr(0)
-    For i = 1 To UBound(arr) - 1
+    For i = 1 To UBound(arr)
         If maxSingle < arr(i) Then maxSingle = arr(i)
     Next i
 End Function
@@ -136,7 +136,7 @@ Attribute minSingle.VB_Description = "Function to return the min of single array
     Dim i As Long
     
     minSingle = arr(0)
-    For i = 1 To UBound(arr) - 1
+    For i = 1 To UBound(arr)
         If minSingle > arr(i) Then minSingle = arr(i)
     Next i
 End Function
@@ -147,7 +147,7 @@ Attribute findSingle.VB_Description = "Function to find a Single value in Single
     Dim i As Long
     
     findSingle = -1
-    For i = 0 To UBound(arr) - 1
+    For i = 0 To UBound(arr)
         If arr(i) = val Then
             findSingle = i
             Exit Function

@@ -1,10 +1,12 @@
 Attribute VB_Name = "MathFunctions"
+Attribute VB_Description = "Divers math functions such as fibonacci, factorial, GCD, LCM, isPrime, factors, primeFactors, isPerfectNumber, modInverse"
 Option Explicit
 
 'Recursive Fibonacci using long type (to avoid memory out of bound)
 'Not advised for high numbers (above 25)
 'Limit is n = 46
 Public Function recursiveFibonacci(n As Long) As Long
+Attribute recursiveFibonacci.VB_Description = "Recursive Fibonacci using long type (to avoid memory out of bound)\r\nNot advised for high numbers (above 25)\r\nLimit is n = 46"
     If n <= 0 Then
         recursiveFibonacci = 0
     ElseIf n = 1 Then
@@ -17,6 +19,7 @@ End Function
 'Iterative Fibonacci using long type (to avoid memory out of bound)
 'Limit is n = 46
 Function iterativeFibonacci(n As Byte) As Long
+Attribute iterativeFibonacci.VB_Description = "Iterative Fibonacci using long type (to avoid memory out of bound)\r\nLimit is n = 46"
     Dim f1 As Long
     Dim f2 As Long
     Dim i As Byte
@@ -40,6 +43,7 @@ End Function
 'Iterative factorial using long type (to avoid memory out of bound)
 'Limit is n = 12
 Public Function iterativeFactorial(n As Long) As Long
+Attribute iterativeFactorial.VB_Description = "Iterative factorial using long type (to avoid memory out of bound)\r\nLimit is n = 12"
     Dim cpt As Integer
     
     iterativeFactorial = 1
@@ -48,9 +52,10 @@ Public Function iterativeFactorial(n As Long) As Long
     Next cpt
 End Function
 
-'Iterative factorial using long type (to avoid memory out of bound)
+'Recursive factorial using long type (to avoid memory out of bound)
 'Limit is n = 12
 Public Function recursiveFactorial(n As Long) As Long
+Attribute recursiveFactorial.VB_Description = "Recursive factorial using long type (to avoid memory out of bound)\r\nLimit is n = 12"
    If n <= 1 Then
       recursiveFactorial = 1
    Else
@@ -61,6 +66,7 @@ End Function
 'GCD (Greatest Common Divisor) for two values using long type
 'If a or b <= 0 then return -1
 Public Function GCD(a As Long, b As Long) As Long
+Attribute GCD.VB_Description = "GCD (Greatest Common Divisor) for two values using long type\r\nIf a or b <= 0 then return -1"
     Dim rest As Long
     
     If a <= 0 Or b <= 0 Then
@@ -86,6 +92,7 @@ End Function
 'Working with GCD function
 'Return -1 if a or b is negative (< 0)
 Public Function LCM(a As Long, b As Long) As Long
+Attribute LCM.VB_Description = "LCM (Least Common Multiple) for two values using long type\r\nWorking with GCD function\r\nReturn -1 if a or b is negative (< 0)"
     If a < 0 Or b < 0 Then
         LCM = -1
     Else
@@ -95,6 +102,7 @@ End Function
 
 'Check if n is a prime number
 Public Function isPrime(n As Long) As Boolean
+Attribute isPrime.VB_Description = "Check if n is a prime number"
     Dim i As Double
     If n < 2 Then
         Exit Function
@@ -113,8 +121,9 @@ Public Function isPrime(n As Long) As Boolean
     isPrime = True
 End Function
 
-'Function to get all factors of a number (in a string)
+'Function to get all factors of a number (returns a string)
 Public Function factors(n As Long) As String
+Attribute factors.VB_Description = "Function to get all factors of a number (returns a string)"
     Dim i As Long
     Dim corresponding As String
     
@@ -140,9 +149,10 @@ Public Function factors(n As Long) As String
     End If
 End Function
 
-'Function to get prime factors of a number (in a string)
+'Function to get prime factors of a number (returns a string)
 'Works with isPrime function
 Public Function primeFactors(n As Long) As String
+Attribute primeFactors.VB_Description = "Function to get prime factors of a number (returns a string)\r\nWorks with isPrime function"
     Dim i As Long
     Dim corresponding As String
     
@@ -180,6 +190,7 @@ End Function
 'Function to check if a number is a perfect number
 'Works with factors, isPrime and sumLongArray functions
 Public Function isPerfectNumber(n As Long) As Boolean
+Attribute isPerfectNumber.VB_Description = "Function to check if a number is a perfect number\r\nWorks with factors, isPrime and sumLongArray functions"
     Dim factorsArray() As Long
     Dim i As Long
     Dim splitting() As String
@@ -194,17 +205,57 @@ Public Function isPerfectNumber(n As Long) As Boolean
     ReDim factorsArray(UBound(splitting))
     
     For i = 0 To UBound(splitting) - 1
-        factorsArray(i) = Val(splitting(i))
+        factorsArray(i) = val(splitting(i))
     Next i
     isPerfectNumber = ((sumLongArray(factorsArray)) = n)
 End Function
 
 'Function to sum all values in long array
 Public Function sumLongArray(arr() As Long) As Long
+Attribute sumLongArray.VB_Description = "Function to sum all values in long array"
     Dim i As Long
     
     sumLongArray = 0
-    For i = 0 To UBound(arr) - 1
+    For i = 0 To UBound(arr)
         sumLongArray = sumLongArray + arr(i)
     Next i
+End Function
+
+'Function to calculate the modular inverse (x mod inverse n)
+'If x isn't invertible then return -1
+Public Function modInverse(x As Long, n As Long) As Long
+Attribute modInverse.VB_Description = "Function to calculate the modular inverse (x mod inverse n)\r\nIf x isn't invertible then return -1"
+    Dim t As Long, nt As Long, r As Long, nr As Long, q As Long, tmp As Long
+
+    If n < 0 Then
+        n = -n
+    End If
+    
+    If x < 0 Then
+        x = n - ((-x) Mod n)
+    End If
+    
+    t = 0
+    nt = 1
+    r = n
+    nr = x
+    
+    While nr <> 0
+        q = r / nr
+        tmp = t
+        t = nt
+        nt = tmp - q * nt
+        tmp = r
+        r = nr
+        nr = tmp - q * nr
+    Wend
+    
+    If r > 1 Then
+        modInverse = -1
+    Else
+        If t < 0 Then
+            t = t + n
+        End If
+        modInverse = t
+    End If
 End Function

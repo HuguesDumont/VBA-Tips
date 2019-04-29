@@ -3,6 +3,7 @@ Option Explicit
 
 'Function to check if string is an IPv4 address
 Public Function isIPv4(address As String) As Boolean
+Attribute isIPv4.VB_Description = "Check if string is a valid IPv4 address"
     Dim numbers() As String
     Dim strNumber As Variant
     Dim number As Integer
@@ -30,6 +31,7 @@ End Function
 'Function to check if string in an IPv6 address
 'Need the Microsoft VBScript Regular Expressions 5.5 reference to work
 Public Function IsIPv6(address As String) As Boolean
+Attribute IsIPv6.VB_Description = "Check if String is a valid IPv6 address"
     Dim reg As New VBScript_RegExp_55.RegExp
     Dim strPattern As String
 
@@ -54,5 +56,6 @@ End Function
 'Function to check if string is a valid IP address (IPv4 or IPv6)
 'Using isIPv4 and isIPv6 functions
 Public Function isIP(address As String) As Boolean
+Attribute isIP.VB_Description = "Check if string is a valid IP address (IPv4 or IPv6)"
     isIP = (isIPv4(address) Or IsIPv6(address))
 End Function

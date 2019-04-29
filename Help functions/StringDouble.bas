@@ -1,4 +1,5 @@
 Attribute VB_Name = "StringDouble"
+Attribute VB_Description = "Functions for String with Double type\n"
 Option Explicit
 
 'Function to check if string is of Double type
