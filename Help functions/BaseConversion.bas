@@ -5,6 +5,7 @@ Option Explicit
 'Function to convert positive long number to binary string
 'Return empty string if error occurred
 Public Function decimalToBinary(strDec As Long) As String
+Attribute decimalToBinary.VB_Description = "Function to convert decimal number to binary string\r\nNeed the Microsoft VBScript Regular Expressions 5.5 reference to test if string is a binary string\r\nReturn -1 if error occurre"
     Dim isNeg As Boolean
     On Error GoTo cannotConvert
     
