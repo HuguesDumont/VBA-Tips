@@ -259,3 +259,43 @@ Attribute modInverse.VB_Description = "Function to calculate the modular inverse
         modInverse = t
     End If
 End Function
+
+'Function to check if number a is a divisor of number b
+Public Function isDivisor(a As Long, b As Long) As Boolean
+Attribute isDivisor.VB_Description = "Check if first number is a divisor of second number (using long types)"
+    isDivisor = IIf(b Mod a = 0, True, False)
+End Function
+
+'Function to sum all digits of a number together once
+Public Function sumDigitsOnce(n As Long) As Long
+Attribute sumDigitsOnce.VB_Description = "Function to sum all digits of a number together once"
+    Dim str As String
+    Dim sum As Long
+    Dim i As Long
+    
+    str = CStr(n)
+    sum = 0
+    For i = 1 To Len(str)
+        sum = sum + CLng(Mid(str, i, 1))
+    Next i
+    sumDigitsOnce = sum
+End Function
+
+'Function to sum all digits of a number together until one digit is left
+Public Function sumAllDigits(n As Long) As Integer
+Attribute sumAllDigits.VB_Description = "Function to sum all digits of a number together until one digit is left"
+    Dim str As String
+    Dim sum As Long
+    Dim i As Long
+    
+    str = CStr(n)
+    If (Len(str) = 1) Then
+        sumAllDigits = n
+    Else
+        sum = 0
+        For i = 1 To Len(str)
+            sum = sum + CLng(Mid(str, i, 1))
+        Next i
+        sumAllDigits = sumAllDigits(sum)
+    End If
+End Function
