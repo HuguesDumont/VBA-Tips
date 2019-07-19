@@ -26,7 +26,3 @@ Loop
     Set objElement = Nothing
     Set objCollection = Nothing
 End Sub
-
-Sub test()
-    Call navigateIE("https://www.google.com/", True)
-End Sub
