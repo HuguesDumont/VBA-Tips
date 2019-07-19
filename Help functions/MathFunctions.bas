@@ -5,7 +5,7 @@ Option Explicit
 'Recursive Fibonacci using long type (to avoid memory out of bound)
 'Not advised for high numbers (above 25)
 'Limit is n = 46
-Public Function recursiveFibonacci(n As Long) As Long
+Public Function recursiveFibonacci(ByVal n As Long) As Long
 Attribute recursiveFibonacci.VB_Description = "Recursive Fibonacci using long type (to avoid memory out of bound)\r\nNot advised for high numbers (above 25)\r\nLimit is n = 46"
     If n <= 0 Then
         recursiveFibonacci = 0
@@ -18,7 +18,7 @@ End Function
 
 'Iterative Fibonacci using long type (to avoid memory out of bound)
 'Limit is n = 46
-Function iterativeFibonacci(n As Byte) As Long
+Function iterativeFibonacci(ByVal n As Long) As Long
 Attribute iterativeFibonacci.VB_Description = "Iterative Fibonacci using long type (to avoid memory out of bound)\r\nLimit is n = 46"
     Dim f1 As Long
     Dim f2 As Long
@@ -42,7 +42,7 @@ End Function
 
 'Iterative factorial using long type (to avoid memory out of bound)
 'Limit is n = 12
-Public Function iterativeFactorial(n As Long) As Long
+Public Function iterativeFactorial(ByVal n As Long) As Long
 Attribute iterativeFactorial.VB_Description = "Iterative factorial using long type (to avoid memory out of bound)\r\nLimit is n = 12"
     Dim cpt As Integer
     
@@ -54,7 +54,7 @@ End Function
 
 'Recursive factorial using long type (to avoid memory out of bound)
 'Limit is n = 12
-Public Function recursiveFactorial(n As Long) As Long
+Public Function recursiveFactorial(ByVal n As Long) As Long
 Attribute recursiveFactorial.VB_Description = "Recursive factorial using long type (to avoid memory out of bound)\r\nLimit is n = 12"
    If n <= 1 Then
       recursiveFactorial = 1
@@ -65,7 +65,7 @@ End Function
 
 'GCD (Greatest Common Divisor) for two values using long type
 'If a or b <= 0 then return -1
-Public Function GCD(a As Long, b As Long) As Long
+Public Function GCD(ByVal a As Long, ByVal b As Long) As Long
 Attribute GCD.VB_Description = "GCD (Greatest Common Divisor) for two values using long type\r\nIf a or b <= 0 then return -1"
     Dim rest As Long
     
@@ -91,7 +91,7 @@ End Function
 'LCM (Least Common Multiple) for two values using long type
 'Working with GCD function
 'Return -1 if a or b is negative (< 0)
-Public Function LCM(a As Long, b As Long) As Long
+Public Function LCM(ByVal a As Long, ByVal b As Long) As Long
 Attribute LCM.VB_Description = "LCM (Least Common Multiple) for two values using long type\r\nWorking with GCD function\r\nReturn -1 if a or b is negative (< 0)"
     If a < 0 Or b < 0 Then
         LCM = -1
@@ -101,7 +101,7 @@ Attribute LCM.VB_Description = "LCM (Least Common Multiple) for two values using
 End Function
 
 'Check if n is a prime number
-Public Function isPrime(n As Long) As Boolean
+Public Function isPrime(ByVal n As Long) As Boolean
 Attribute isPrime.VB_Description = "Check if n is a prime number"
     Dim i As Double
     If n < 2 Then
@@ -121,14 +121,54 @@ Attribute isPrime.VB_Description = "Check if n is a prime number"
     isPrime = True
 End Function
 
+'Get previous prime. If n <= 2 then it hasn't a previous prime so function returns -1
+Public Function previousPrime(ByVal n As Long) As Long
+Attribute previousPrime.VB_Description = "Get previous prime. If n <= 2 then it hasn't a previous prime so function returns -1"
+    If (n <= 2) Then
+        previousPrime = -1
+    ElseIf (n = 3) Then
+        previousPrime = 2
+    Else
+        If (n Mod 2 = 0) Then
+            n = n - 1
+        Else
+            n = n - 2
+        End If
+        
+        While (Not isPrime(n))
+            n = n - 2
+        Wend
+        previousPrime = n
+    End If
+End Function
+
+'Get next prime number
+Public Function nextPrime(ByVal n As Long) As Long
+Attribute nextPrime.VB_Description = "Get next prime number"
+    If (n < 2) Then
+        nextPrime = 2
+    Else
+        If (n Mod 2 = 0) Then
+            n = n + 1
+        Else
+            n = n + 2
+        End If
+        
+        While (Not isPrime(n))
+            n = n + 2
+        Wend
+        nextPrime = n
+    End If
+End Function
+
 'Function to get all factors of a number (returns a string)
-Public Function factors(n As Long) As String
+Public Function factors(ByVal n As Long) As String
 Attribute factors.VB_Description = "Function to get all factors of a number (returns a string)"
     Dim i As Long
     Dim corresponding As String
     
     If n < 1 Then
-        MsgBox "Value cannot be below 0.", vbOKOnly + vbExclamation, "Invalid number"
+        MsgBox "Value cannot be below 1.", vbOKOnly + vbExclamation, "Invalid number"
         Exit Function
     End If
     
@@ -151,7 +191,7 @@ End Function
 
 'Function to get prime factors of a number (returns a string)
 'Works with isPrime function
-Public Function primeFactors(n As Long) As String
+Public Function primeFactors(ByVal n As Long) As String
 Attribute primeFactors.VB_Description = "Function to get prime factors of a number (returns a string)\r\nWorks with isPrime function"
     Dim i As Long
     Dim corresponding As String
@@ -173,7 +213,7 @@ Attribute primeFactors.VB_Description = "Function to get prime factors of a numb
         End If
     End If
     
-    For i = 3 To Sqr(n) Step 2
+    For i = 3 To Int(n / 2) + 1 Step 2
         If n Mod i = 0 And isPrime(i) Then
             primeFactors = IIf(primeFactors <> "", primeFactors & ", " & CStr(i), CStr(i))
             If ((i <> (n / i)) And isPrime(n / i)) Then
@@ -189,7 +229,7 @@ End Function
 
 'Function to check if a number is a perfect number
 'Works with factors, isPrime and sumLongArray functions
-Public Function isPerfectNumber(n As Long) As Boolean
+Public Function isPerfectNumber(ByVal n As Long) As Boolean
 Attribute isPerfectNumber.VB_Description = "Function to check if a number is a perfect number\r\nWorks with factors, isPrime and sumLongArray functions"
     Dim factorsArray() As Long
     Dim i As Long
@@ -223,7 +263,7 @@ End Function
 
 'Function to calculate the modular inverse (x mod inverse n)
 'If x isn't invertible then return -1
-Public Function modInverse(x As Long, n As Long) As Long
+Public Function modInverse(ByVal x As Long, ByVal n As Long) As Long
 Attribute modInverse.VB_Description = "Function to calculate the modular inverse (x mod inverse n)\r\nIf x isn't invertible then return -1"
     Dim t As Long, nt As Long, r As Long, nr As Long, q As Long, tmp As Long
 
@@ -261,13 +301,13 @@ Attribute modInverse.VB_Description = "Function to calculate the modular inverse
 End Function
 
 'Function to check if number a is a divisor of number b
-Public Function isDivisor(a As Long, b As Long) As Boolean
+Public Function isDivisor(ByVal a As Long, ByVal b As Long) As Boolean
 Attribute isDivisor.VB_Description = "Check if first number is a divisor of second number (using long types)"
     isDivisor = IIf(b Mod a = 0, True, False)
 End Function
 
 'Function to sum all digits of a number together once
-Public Function sumDigitsOnce(n As Long) As Long
+Public Function sumDigitsOnce(ByVal n As Long) As Long
 Attribute sumDigitsOnce.VB_Description = "Function to sum all digits of a number together once"
     Dim str As String
     Dim sum As Long
@@ -282,7 +322,7 @@ Attribute sumDigitsOnce.VB_Description = "Function to sum all digits of a number
 End Function
 
 'Function to sum all digits of a number together until one digit is left
-Public Function sumAllDigits(n As Long) As Integer
+Public Function sumAllDigits(ByVal n As Long) As Integer
 Attribute sumAllDigits.VB_Description = "Function to sum all digits of a number together until one digit is left"
     Dim str As String
     Dim sum As Long
@@ -298,4 +338,19 @@ Attribute sumAllDigits.VB_Description = "Function to sum all digits of a number 
         Next i
         sumAllDigits = sumAllDigits(sum)
     End If
+End Function
+
+'Factorial inverse of n. If n isn't a factorial then return -1
+Public Function factorialInverse(ByVal n As Long) As Long
+Attribute factorialInverse.VB_Description = "Factorial inverse of n. If n isn't a factorial then return -1"
+    Dim i As Long
+    Dim res As Double
+    
+    i = 1
+    res = CDbl(n)
+    While (res > 1 And res = Int(res))
+        i = i + 1
+        res = res / i
+    Wend
+    factorialInverse = IIf(res = Int(res), i, -1)
 End Function
