@@ -4,8 +4,8 @@ Option Explicit
 
 'Function to convert positive long number to binary string
 'Return empty string if error occurred
-Public Function decimalToBinary(strDec As Long) As String
-Attribute decimalToBinary.VB_Description = "Function to convert decimal number to binary string\r\nNeed the Microsoft VBScript Regular Expressions 5.5 reference to test if string is a binary string\r\nReturn -1 if error occurre"
+Public Function DecimalToBinary(ByVal strDec As Long) As String
+Attribute DecimalToBinary.VB_Description = "Function to convert decimal number to binary string\r\nNeed the Microsoft VBScript Regular Expressions 5.5 reference to test if string is a binary string\r\nReturn -1 if error occurre"
     Dim isNeg As Boolean
     On Error GoTo cannotConvert
     
@@ -15,12 +15,12 @@ Attribute decimalToBinary.VB_Description = "Function to convert decimal number t
     End If
     
     While strDec <> 0
-        decimalToBinary = Format(strDec - 2 * Int(strDec / 2)) & decimalToBinary
+        DecimalToBinary = Format(strDec - 2 * Int(strDec / 2)) & DecimalToBinary
         strDec = Int(strDec / 2)
     Wend
     
     If isNeg Then
-        decimalToBinary = "-" & decimalToBinary
+        DecimalToBinary = "-" & DecimalToBinary
     End If
     
     Exit Function
@@ -31,14 +31,14 @@ cannotConvert:
     Else
         MsgBox "Cannot convert to binary due to an unknown error.", vbCritical + vbOKOnly, "Unknown error"
     End If
-    decimalToBinary = ""
+    DecimalToBinary = ""
 End Function
 
 'Function to convert binary string to decimal number
 'Need the Microsoft VBScript Regular Expressions 5.5 reference to test if string is a binary string
 'Return -1 if error occurred
-Public Function binaryToDecimal(strBin As String) As Long
-Attribute binaryToDecimal.VB_Description = "Function to convert binary string to decimal number\r\nNeed the Microsoft VBScript Regular Expressions 5.5 reference to test if string is a binary string\r\nReturn -1 if error occurred"
+Public Function BinaryToDecimal(ByVal strBin As String) As Long
+Attribute BinaryToDecimal.VB_Description = "Function to convert binary string to decimal number\r\nNeed the Microsoft VBScript Regular Expressions 5.5 reference to test if string is a binary string\r\nReturn -1 if error occurred"
     Dim x As Integer
     Dim reg As New VBScript_RegExp_55.RegExp
     Dim strPattern As String
@@ -46,14 +46,14 @@ Attribute binaryToDecimal.VB_Description = "Function to convert binary string to
     reg.Pattern = "^((0|1)*)$"
     If Not reg.test(strBin) Then
         MsgBox "Cannot convert to decimal value because string isn't a binary number.", vbOKOnly + vbCritical, "Invalid string"
-        binaryToDecimal = -1
+        BinaryToDecimal = -1
         Exit Function
     End If
     
     On Error GoTo cannotConvert
     
     For x = 0 To Len(strBin) - 1
-        binaryToDecimal = CDec(binaryToDecimal) + val(Mid(strBin, Len(strBin) - x, 1)) * 2 ^ x
+        BinaryToDecimal = CDec(BinaryToDecimal) + val(Mid(strBin, Len(strBin) - x, 1)) * 2 ^ x
     Next
     
     Exit Function
@@ -66,13 +66,13 @@ cannotConvert:
     Else
         MsgBox "Cannot convert to decimal due to an unknown error.", vbCritical + vbOKOnly, "Unknown error"
     End If
-    binaryToDecimal = -1
+    BinaryToDecimal = -1
 End Function
 
 'Function to convert a decimal value to any other base
 'Base limit is 35 (9 digits (0 is excluded) + 26 letters)
-Public Function decimalToBase(srcValue As String, destBase As Integer) As String
-Attribute decimalToBase.VB_Description = "Function to convert a decimal value to any other base\r\nBase limit is 35 (9 digits (0 is excluded) + 26 letters)"
+Public Function DecimalToBase(ByVal srcValue As String, ByVal destBase As Integer) As String
+Attribute DecimalToBase.VB_Description = "Function to convert a decimal value to any other base\r\nBase limit is 35 (9 digits (0 is excluded) + 26 letters)"
     Dim valueRest As Long
     Dim charRest As String
     Dim toDivide As Long
@@ -80,7 +80,7 @@ Attribute decimalToBase.VB_Description = "Function to convert a decimal value to
     On Error GoTo cannotConvert
     
     toDivide = val(srcValue)
-    decimalToBase = ""
+    DecimalToBase = ""
     
     If destBase < 2 Or destBase > 36 Then
         MsgBox "Cannot convert to base over 36 or below 2.", vbOKOnly + vbExclamation, "Base error"
@@ -89,7 +89,7 @@ Attribute decimalToBase.VB_Description = "Function to convert a decimal value to
     While toDivide > 0
         valueRest = toDivide - Int(toDivide / destBase) * destBase
         charRest = Mid("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", valueRest + 1, 1)
-        decimalToBase = Trim(charRest) & decimalToBase
+        DecimalToBase = Trim(charRest) & DecimalToBase
         toDivide = Int(toDivide / destBase)
     Wend
     
@@ -107,8 +107,8 @@ End Function
 
 'Function to convert from any base to decimal
 'Base limit is 35 (9 digits (0 is excluded) + 26 letters)
-Function baseToDecimal(srcValue As String, srcBase As Integer) As Long
-Attribute baseToDecimal.VB_Description = "Function to convert from any base to decimal\r\nBase limit is 35 (9 digits (0 is excluded) + 26 letters)"
+Function BaseToDecimal(ByVal srcValue As String, ByVal srcBase As Integer) As Long
+Attribute BaseToDecimal.VB_Description = "Function to convert from any base to decimal\r\nBase limit is 35 (9 digits (0 is excluded) + 26 letters)"
     Dim i As Long
     Dim strDigits As String
     Dim digitValue As Long
@@ -124,7 +124,7 @@ Attribute baseToDecimal.VB_Description = "Function to convert from any base to d
         If digitValue < 0 Then
             MsgBox "Unvalid charachter found in source value", vbOKOnly + vbExclamation, "Unvalid value"
         End If
-        baseToDecimal = baseToDecimal * srcBase + digitValue
+        BaseToDecimal = BaseToDecimal * srcBase + digitValue
     Next
     
     Exit Function
@@ -142,7 +142,7 @@ End Function
 'Function to convert from any base to any other base
 'Using decimal as temporary conversion
 'Using baseToDecimal and decimalToBase functions
-Public Function convertBase(value As String, srcBase As Integer, destBase As Integer) As String
-Attribute convertBase.VB_Description = "Function to convert from any base to any other base\r\nUsing decimal as temporary conversion\r\nUsing baseToDecimal and decimalToBase functions"
-    convertBase = decimalToBase(baseToDecimal(value, srcBase), destBase)
+Public Function ConvertBase(ByVal value As String, ByVal srcBase As Integer, ByVal destBase As Integer) As String
+Attribute ConvertBase.VB_Description = "Function to convert from any base to any other base\r\nUsing decimal as temporary conversion\r\nUsing baseToDecimal and decimalToBase functions"
+    ConvertBase = DecimalToBase(BaseToDecimal(value, srcBase), destBase)
 End Function

@@ -5,8 +5,8 @@ Attribute VB_Description = "Functions to handle file and folder processing\r\nNe
 Option Explicit
 
 'Function to format file or folder fullPath
-Public Function formatPath(ByVal fName As String, ByVal fPath As String) As String
-Attribute formatPath.VB_Description = "Function to format file or folder fullPath"
+Public Function FormatPath(ByVal fName As String, ByVal fPath As String) As String
+Attribute FormatPath.VB_Description = "Function to format file or folder fullPath"
     'If name starts with "/" or "\" remove first character
     If (Left(fName, 1) = "\" Or Left(fName, 1) = "/") Then
         fName = Right(fName, Len(fName) - 1)
@@ -23,61 +23,61 @@ Attribute formatPath.VB_Description = "Function to format file or folder fullPat
     End If
     
     'Format to standard windows path
-    formatPath = Replace(fName, "/", "\")
+    FormatPath = Replace(fName, "/", "\")
     
     'Remove last "\" if necessary
-    If (Right(formatPath, 1) = "\") Then
-        formatPath = Left(formatPath, Len(formatPath) - 1)
+    If (Right(FormatPath, 1) = "\") Then
+        FormatPath = Left(FormatPath, Len(FormatPath) - 1)
     End If
 End Function
 
 'Function to get folder root from file name (full path or just file name)
 'Assuming the path is full path, if not then root folder is current folder
-Public Function getFolderName(fPath As String) As String
-Attribute getFolderName.VB_Description = "Function to get folder root from file name (full path or just file name)\r\nAssuming the path is full path, if not then root folder is current folder"
+Public Function GetFolderName(ByVal fPath As String) As String
+Attribute GetFolderName.VB_Description = "Function to get folder root from file name (full path or just file name)\r\nAssuming the path is full path, if not then root folder is current folder"
     If InStr(fPath, "\") > 0 Then
-       getFolderName = Left(fPath, InStrRev(fPath, "\") - 1)
+       GetFolderName = Left(fPath, InStrRev(fPath, "\") - 1)
     Else
-        getFolderName = ThisWorkbook.Path
+        GetFolderName = ThisWorkbook.Path
     End If
 End Function
 
 'Function to get file name from path (or last folder if path is a folder path)
-Public Function getSourceName(fPath As String) As String
-Attribute getSourceName.VB_Description = "Function to get file name from path (or last folder if path is a folder path)"
-    getSourceName = Right(fPath, Len(fPath) - InStrRev(fPath, "\"))
+Public Function GetSourceName(ByVal fPath As String) As String
+Attribute GetSourceName.VB_Description = "Function to get file name from path (or last folder if path is a folder path)"
+    GetSourceName = Right(fPath, Len(fPath) - InStrRev(fPath, "\"))
 End Function
 
 'Function to check if file or folder exists
-Public Function fExists(fName As String, Optional fPath As String = "") As Boolean
-Attribute fExists.VB_Description = "Function to check if file or folder exists"
-    fExists = (Len(Dir(formatPath(fName, fPath), vbDirectory)) <> 0)
+Public Function FExists(ByVal fName As String, Optional ByVal fPath As String = "") As Boolean
+Attribute FExists.VB_Description = "Function to check if file or folder exists"
+    FExists = (Len(Dir(FormatPath(fName, fPath), vbDirectory)) <> 0)
 End Function
 
 'Function to check if folder exists
 'If path isn't a folder name (can be a file name) then return false
-Public Function folderExists(fName As String, Optional fPath As String = "") As Boolean
-Attribute folderExists.VB_Description = "Function to check if folder exists\r\nIf path isn't a folder name (can be a file name) then return false"
+Public Function FolderExists(ByVal fName As String, Optional ByVal fPath As String = "") As Boolean
+Attribute FolderExists.VB_Description = "Function to check if folder exists\r\nIf path isn't a folder name (can be a file name) then return false"
     On Error Resume Next
-    folderExists = (GetAttr(formatPath(fName, fPath)) And vbDirectory)
+    FolderExists = (GetAttr(FormatPath(fName, fPath)) And vbDirectory)
 End Function
 
 'Function to check if file exists
-Public Function fileExists(fName As String, Optional fPath As String = "") As Boolean
-Attribute fileExists.VB_Description = "Function to check if file exists"
-    fileExists = (Dir(formatPath(fName, fPath)) <> "")
+Public Function FileExists(ByVal fName As String, Optional ByVal fPath As String = "") As Boolean
+Attribute FileExists.VB_Description = "Function to check if file exists"
+    FileExists = (Dir(FormatPath(fName, fPath)) <> "")
 End Function
 
 'Sub to create folder (if folder doesn't exist)
 'If dest = "" then fName is full path
-Public Sub createFolder(fName As String, Optional dest As String = "")
-Attribute createFolder.VB_Description = "Sub to create folder (if folder doesn't exist)\r\nIf dest = """" then fName is full path"
+Public Sub CreateFolder(ByVal fName As String, Optional ByVal dest As String = "")
+Attribute CreateFolder.VB_Description = "Sub to create folder (if folder doesn't exist)\r\nIf dest = """" then fName is full path"
     On Error GoTo cantCreate
     
-    fName = formatPath(fName, dest)
+    fName = FormatPath(fName, dest)
     
-    If Not folderExists(fName) Then
-        Call createFolder(getFolderName(fName))
+    If Not FolderExists(fName) Then
+        Call CreateFolder(GetFolderName(fName))
         MkDir fName
     End If
     
@@ -90,18 +90,18 @@ End Sub
 'Sub to create file (using name and path separately)
 'If dest = "" then fName is full path
 'Do not overwrite by default
-Public Sub createFile(fName As String, Optional dest As String = "", Optional overwrite As Boolean = False)
-Attribute createFile.VB_Description = "Sub to create file (using name and path separately)\r\nIf dest = """" then fName is full path\r\nDo not overwrite by default"
+Public Sub CreateFile(ByVal fName As String, Optional ByVal dest As String = "", Optional ByVal overwrite As Boolean = False)
+Attribute CreateFile.VB_Description = "Sub to create file (using name and path separately)\r\nIf dest = """" then fName is full path\r\nDo not overwrite by default"
     On Error GoTo cantCreate
     
     Dim FSO As New Scripting.FileSystemObject
     Dim oFile As Object
     
     'Get full path
-    fName = formatPath(fName, dest)
+    fName = FormatPath(fName, dest)
     
     'Create folder if necessary
-    createFolder getFolderName(fName)
+    CreateFolder GetFolderName(fName)
     
     'Create the file
     Set oFile = FSO.createTextFile(fName, overwrite)
@@ -119,14 +119,14 @@ cantCreate:
 End Sub
 
 'Sub to move or rename folder
-Public Sub moveOrRenameFolder(fName As String, destName As String, Optional sourcePath As String = "", Optional destPath As String = "")
-Attribute moveOrRenameFolder.VB_Description = "Sub to move or rename folder"
-    fName = formatPath(fName, sourcePath)
-    destName = formatPath(destName, destPath)
+Public Sub MoveOrRenameFolder(ByVal fName As String, ByVal destName As String, Optional ByVal sourcePath As String = "", Optional ByVal destPath As String = "")
+Attribute MoveOrRenameFolder.VB_Description = "Sub to move or rename folder"
+    fName = FormatPath(fName, sourcePath)
+    destName = FormatPath(destName, destPath)
     
-    If folderExists(fName) Then
-        If Not folderExists(destName) Then
-            createFolder getFolderName(destName)
+    If FolderExists(fName) Then
+        If Not FolderExists(destName) Then
+            CreateFolder GetFolderName(destName)
             Name fName As destName
         Else
             MsgBox "Destination folder already exists.", vbOKOnly + vbExclamation, "Cannot rename folder"
@@ -137,15 +137,15 @@ Attribute moveOrRenameFolder.VB_Description = "Sub to move or rename folder"
 End Sub
 
 'Sub to move or rename file
-Public Sub moveOrRenameFile(fName As String, destName As String, Optional sourcePath As String = "", Optional destPath As String = "")
-Attribute moveOrRenameFile.VB_Description = "Sub to move or rename file"
-    fName = formatPath(fName, sourcePath)
-    destName = formatPath(destName, destPath)
+Public Sub MoveOrRenameFile(ByVal fName As String, ByVal destName As String, Optional ByVal sourcePath As String = "", Optional ByVal destPath As String = "")
+Attribute MoveOrRenameFile.VB_Description = "Sub to move or rename file"
+    fName = FormatPath(fName, sourcePath)
+    destName = FormatPath(destName, destPath)
     
-    If fileExists(fName) Then
+    If FileExists(fName) Then
             
-        If Not fileExists(destName) Then
-            createFolder getFolderName(destName)
+        If Not FileExists(destName) Then
+            CreateFolder GetFolderName(destName)
             Name fName As destName
         Else
             MsgBox "Destination file already exists.", vbOKOnly + vbExclamation, "Cannot rename file"
@@ -158,13 +158,12 @@ End Sub
 'Sub to copy file or folder to another folder
 'If dest folder doesn't exists then creates it
 'If destName <> "" then copy will have a different name from source
-Public Sub copyTo(fName As String, destPath As String, Optional sourcePath As String = "", Optional destName As String = "", Optional overwrite As Boolean = False)
-Attribute copyTo.VB_Description = "Sub to copy file or folder to another folder\r\nIf dest folder doesn't exists then creates it\r\nIf destName <> """" then copy will have a different name from source"
-    
-    If folderExists(formatPath(fName, sourcePath)) Then
-        Call copyFolderTo(fName, destPath, sourcePath, destName, copusubfolders, copySubFiles, overwrite)
-    ElseIf fileExists(formatPath(fName, sourcePath)) Then
-        Call copyFileTo(fName, destPath, sourcePath, destName, overwrite)
+Public Sub CopyTo(ByVal fName As String, ByVal destPath As String, Optional ByVal sourcePath As String = "", Optional ByVal destName As String = "", Optional ByVal overwrite As Boolean = False)
+Attribute CopyTo.VB_Description = "Sub to copy file or folder to another folder\r\nIf dest folder doesn't exists then creates it\r\nIf destName <> """" then copy will have a different name from source"
+    If FolderExists(FormatPath(fName, sourcePath)) Then
+        Call CopyFolderTo(fName, destPath, sourcePath, destName, copusubfolders, copySubFiles, overwrite)
+    ElseIf FileExists(FormatPath(fName, sourcePath)) Then
+        Call CopyFileTo(fName, destPath, sourcePath, destName, overwrite)
     Else
         MsgBox "Source not found. Please check your source path.", vbOKOnly + vbExclamation, "Cannot copy"
     End If
@@ -173,20 +172,20 @@ End Sub
 'Sub to copy a folder to another folder
 'If dest folder doesn't exists then creates it
 'If destName <> "" then copy will have a different name from source
-Public Sub copyFolderTo(fName As String, destPath As String, Optional sourcePath As String = "", Optional destName As String = "", Optional overwrite As Boolean = False)
-Attribute copyFolderTo.VB_Description = "Sub to copy a folder to another folder\r\nIf dest folder doesn't exists then creates it\r\nIf destName <> """" then copy will have a different name from source"
+Public Sub CopyFolderTo(ByVal fName As String, ByVal destPath As String, Optional ByVal sourcePath As String = "", Optional ByVal destName As String = "", Optional ByVal overwrite As Boolean = False)
+Attribute CopyFolderTo.VB_Description = "Sub to copy a folder to another folder\r\nIf dest folder doesn't exists then creates it\r\nIf destName <> """" then copy will have a different name from source"
     Dim FSO As New Scripting.FileSystemObject
     
-    fName = formatPath(fName, sourcePath)
+    fName = FormatPath(fName, sourcePath)
     
-    If folderExists(fName) Then
+    If FolderExists(fName) Then
         If destName <> "" Then
-            destPath = formatPath(destName, destPath)
+            destPath = FormatPath(destName, destPath)
         Else
-            destPath = formatPath(getSourceName(fName), destPath)
+            destPath = FormatPath(GetSourceName(fName), destPath)
         End If
         
-        Call FSO.CopyFolder(fName, destPath, (overwrite Or Not folderExists(destPath)))
+        Call FSO.CopyFolder(fName, destPath, (overwrite Or Not FolderExists(destPath)))
     Else
         MsgBox "Source folder not found. Please check your source folder path.", vbOKOnly + vbExclamation, "Cannot copy folder"
     End If
@@ -195,18 +194,18 @@ End Sub
 'Sub to copy a file to another folder
 'If dest folder doesn't exists then creates it
 'If destName <> "" then copy will have a different name from source
-Public Sub copyFileTo(fName As String, destPath As String, Optional sourcePath As String = "", Optional destName As String = "", Optional overwrite As Boolean = False)
-Attribute copyFileTo.VB_Description = "Sub to copy a file to another folder\r\nIf dest folder doesn't exists then creates it\r\nIf destName <> """" then copy will have a different name from source"
-    fName = formatPath(fName, sourcePath)
-    If fileExists(fName) Then
+Public Sub CopyFileTo(ByVal fName As String, ByVal destPath As String, Optional ByVal sourcePath As String = "", Optional ByVal destName As String = "", Optional ByVal overwrite As Boolean = False)
+Attribute CopyFileTo.VB_Description = "Sub to copy a file to another folder\r\nIf dest folder doesn't exists then creates it\r\nIf destName <> """" then copy will have a different name from source"
+    fName = FormatPath(fName, sourcePath)
+    If FileExists(fName) Then
         If destName <> "" Then
-            destPath = formatPath(destName, destPath)
+            destPath = FormatPath(destName, destPath)
         Else
-            destPath = formatPath(getSourceName(fName), destPath)
+            destPath = FormatPath(GetSourceName(fName), destPath)
         End If
         
-        If overwrite Or Not fileExists(destPath) Then
-            createFolder getFolderName(destPath)
+        If overwrite Or Not FileExists(destPath) Then
+            CreateFolder GetFolderName(destPath)
             FileCopy fName, destPath
         Else
             MsgBox "File already exists in destination folder.", vbOKOnly + vbExclamation, "File already exists"
@@ -219,16 +218,16 @@ End Sub
 'Sub to copy all files from one directory to another
 'If dest folder doesn't exists then creates it
 'If destName <> "" then copy will have a different name from source
-Public Sub copyAllFilesTo(fName As String, destPath As String, Optional sourcePath As String = "", Optional destName As String = "", Optional overwrite As Boolean = False)
-Attribute copyAllFilesTo.VB_Description = "Sub to copy all files from one directory to another\r\nIf dest folder doesn't exists then creates it\r\nIf destName <> """" then copy will have a different name from source"
+Public Sub CopyAllFilesTo(ByVal fName As String, ByVal destPath As String, Optional ByVal sourcePath As String = "", Optional ByVal destName As String = "", Optional ByVal overwrite As Boolean = False)
+Attribute CopyAllFilesTo.VB_Description = "Sub to copy all files from one directory to another\r\nIf dest folder doesn't exists then creates it\r\nIf destName <> """" then copy will have a different name from source"
     Dim FSO As New Scripting.FileSystemObject
     
-    fName = formatPath(fName, sourcePath)
+    fName = FormatPath(fName, sourcePath)
     
-    If folderExists(fName) Then
-        destPath = formatPath(destName, destPath)
-        createFolder destPath
-        Call FSO.copyFile(fName & "\*.*", destPath, (overwrite Or Not folderExists(destPath)))
+    If FolderExists(fName) Then
+        destPath = FormatPath(destName, destPath)
+        CreateFolder destPath
+        Call FSO.copyFile(fName & "\*.*", destPath, (overwrite Or Not FolderExists(destPath)))
     Else
         MsgBox "Source folder not found. Please check your source folder path.", vbOKOnly + vbExclamation, "Cannot copy folder"
     End If
@@ -236,26 +235,26 @@ End Sub
 
 'Sub to delete folder or file
 'If fPath = "" then fName is full Path
-Public Sub deletion(fName As String, Optional fPath As String = "")
-Attribute deletion.VB_Description = "Sub to delete folder or file\r\nIf fPath = """" then fName is full Path"
+Public Sub Deletion(ByVal fName As String, Optional ByVal fPath As String = "")
+Attribute Deletion.VB_Description = "Sub to delete folder or file\r\nIf fPath = """" then fName is full Path"
     On Error Resume Next
     deleteFolder fName, fPath
-    deleteFile fName, fPath
+    DeleteFile fName, fPath
 End Sub
 
 'Sub to delete folder
 'If fPath = "" then fName is full Path
-Public Sub deleteFolder(fName As String, Optional fPath As String = "")
+Public Sub deleteFolder(ByVal fName As String, Optional ByVal fPath As String = "")
 Attribute deleteFolder.VB_Description = "Sub to delete folder\r\nIf fPath = """" then fName is full Path"
     Dim FSO As New Scripting.FileSystemObject
     
-    fName = formatPath(fName, fPath)
+    fName = FormatPath(fName, fPath)
     
-    If folderExists(fName) Then
+    If FolderExists(fName) Then
         On Error Resume Next
         
         'Delete files
-        FSO.deleteFile fName & "\*.*", True
+        FSO.DeleteFile fName & "\*.*", True
         
         'Delete subfolders
         FSO.deleteFolder fName & "\*.*", True
@@ -272,11 +271,11 @@ End Sub
 
 'Sub to delete file
 'If fPath = "" then fName is full Path
-Public Sub deleteFile(fName As String, Optional fPath As String = "")
-Attribute deleteFile.VB_Description = "Sub to delete file\r\nIf fPath = """" then fName is full Path"
+Public Sub DeleteFile(ByVal fName As String, Optional ByVal fPath As String = "")
+Attribute DeleteFile.VB_Description = "Sub to delete file\r\nIf fPath = """" then fName is full Path"
     On Error GoTo errorDeleting
-    If fileExists(formatPath(fName, fPath)) Then
-        Kill formatPath(fName, fPath)
+    If FileExists(FormatPath(fName, fPath)) Then
+        Kill FormatPath(fName, fPath)
     Else
         MsgBox "Source file not found. Please check your source file path.", vbOKOnly + vbExclamation, "Cannot delete file"
     End If
@@ -286,12 +285,12 @@ End Sub
 
 'Sub to delete all files in folder
 'If fPath = "" then fName is full path
-Public Sub deleteAllFiles(fName As String, Optional fPath As String = "")
-Attribute deleteAllFiles.VB_Description = "Sub to delete all files in folder\r\nIf fPath = """" then fName is full path"
+Public Sub DeleteAllFiles(ByVal fName As String, Optional ByVal fPath As String = "")
+Attribute DeleteAllFiles.VB_Description = "Sub to delete all files in folder\r\nIf fPath = """" then fName is full path"
     On Error GoTo errorDeleting
     
-    If folderExists(formatPath(fName, fPath)) Then
-        Kill formatPath(fName, fPath) & "*.*"
+    If FolderExists(FormatPath(fName, fPath)) Then
+        Kill FormatPath(fName, fPath) & "*.*"
     Else
         MsgBox "Source folder not found. Please check your source folder path.", vbOKOnly + vbExclamation, "Cannot delete files"
     End If

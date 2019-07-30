@@ -2,8 +2,30 @@ Attribute VB_Name = "ArraysAndCollections"
 Attribute VB_Description = "Help functions for Arrays, Collections, ArrayLists and Dictionaries"
 Option Explicit
 
+'Function to add all elements to array
+Public Sub AddAllArray(ByVal toAdd As Variant, ByRef arr As Variant)
+Attribute AddAllArray.VB_Description = "Function to add all elements to array"
+    Dim i As Long
+    Dim limit As Long
+    
+    limit = UBound(arr) + 1
+    
+    ReDim Preserve arr(1 To UBound(arr) + UBound(toAdd) + 2) As Variant
+    
+    For i = limit + 1 To UBound(arr)
+        arr(i) = toAdd(i - limit - 1)
+    Next i
+End Sub
+
+'Function to add an element to array
+Public Sub AddArray(ByVal val As Variant, ByRef arr As Variant)
+Attribute AddArray.VB_Description = "Function to add an element to array"
+    ReDim Preserve arr(0 To UBound(arr) + 1) As Variant
+    arr(UBound(arr)) = val
+End Sub
+
 'Function to convert a 2D array to a dictionary
-Function ArrayToDictionary(arr As Variant) As Scripting.Dictionary
+Public Function ArrayToDictionary(ByVal arr As Variant) As Scripting.Dictionary
 Attribute ArrayToDictionary.VB_Description = "Function to convert a 2D array to a dictionary"
     Dim i As Integer
     
@@ -21,10 +43,154 @@ arrayDimensionError:
         "If you keep getting an error, please check on your admin", vbCritical + vbOKOnly, "Error converting array to dictionary"
 End Function
 
+'Function to get the complement of the intersection of 2 arrays (union-intersection)
+'It uses the union, intersection and difference function [difference(union(a,b),intersection(a,b))]
+Public Function ComplementIntersection(ByVal arrLeft As Variant, ByVal arrRight As Variant) As Variant
+Attribute ComplementIntersection.VB_Description = "Function to get the complement of the intersection of 2 arrays (union-intersection)\r\nIt uses the union, intersection and difference function [difference(union(a,b),intersection(a,b))]"
+    ComplementIntersection = Difference(Union(arrLeft, arrRight), Intersection(arrLeft, arrRight))
+End Function
+
+'Function to check if array contains value
+Public Function Contains(ByVal arr As Variant, ByVal value As Variant) As Boolean
+Attribute Contains.VB_Description = "Function to check if array contains value"
+    Dim i As Long
+    
+    Contains = False
+    For i = 0 To UBound(arr)
+        If value = arr(i) Then
+            Contains = True
+            Exit Function
+        End If
+    Next i
+End Function
+
+'Function to get the difference between arrLeft and arrRight
+Public Function Difference(ByVal arrLeft As Variant, ByVal arrRight As Variant) As Variant
+Attribute Difference.VB_Description = "Function to get the difference between arrLeft and arrRight"
+    Dim elem As Variant
+    
+    Difference = arrLeft
+    For Each elem In arrRight
+        If (Contains(Difference, elem)) Then
+            Call Remove(Difference, elem)
+        End If
+    Next elem
+End Function
+
+'Function to get position of first index of a value in an array
+'If value is not found in array, return -1
+Public Function IndexOf(ByVal arr As Variant, ByVal value As Variant) As Long
+Attribute IndexOf.VB_Description = "Function to get position of first index of a value in an array\r\nIf value is not found in array, return -1"
+    Dim i As Long
+    
+    IndexOf = -1
+    For i = 0 To UBound(arr)
+        If value = arr(i) Then
+            IndexOf = i
+            Exit Function
+        End If
+    Next i
+End Function
+
+'Function to get the intersection of two arrays
+Public Function Intersection(ByVal arrLeft As Variant, ByVal arrRight As Variant) As Variant
+Attribute Intersection.VB_Description = "Function to get the intersection of two arrays"
+    Dim elem As Variant
+    
+    Intersection = Array()
+    For Each elem In arrLeft
+        If (Contains(arrRight, elem)) Then
+            Call AddArray(elem, Intersection)
+        End If
+    Next elem
+End Function
+
+'Function to remove a specific value from an array (only first instance in the array)
+Public Sub Remove(ByRef arr As Variant, ByVal value As Variant)
+Attribute Remove.VB_Description = "Function to remove a specific value from an array (only first instance in the array)"
+    Dim i As Long, pos As Long
+    Dim tmpArr As Variant
+    
+    pos = IndexOf(arr, value)
+    
+    If (pos <> -1) Then
+        For i = pos To UBound(arr) - 1
+            arr(i) = arr(i + 1)
+        Next i
+        ReDim Preserve arr(UBound(arr) - 1)
+    End If
+End Sub
+
+'Function to remove duplicates from an array
+Public Function RemoveDuplicates(ByVal arr As Variant) As Variant
+Attribute RemoveDuplicates.VB_Description = "Function to remove duplicates from an array"
+    Dim coll As New Collection
+    Dim i As Long, cpt As Long
+    Dim tmp As Variant
+    
+    ReDim tmp(UBound(arr))
+    
+    For i = LBound(arr) To UBound(arr)
+        On Error Resume Next
+        coll.Add CStr(arr(i)), CStr(arr(i))
+        
+        If Err.number > 0 Then
+            On Error GoTo 0
+        Else
+            tmp(cpt) = arr(i)
+            cpt = cpt + 1
+        End If
+    Next i
+    
+    ReDim Preserve tmp(cpt - 1)
+    RemoveDuplicates = tmp
+End Function
+
+'Function to reverse array
+Public Function ReverseArray(ByVal arr As Variant) As Variant
+Attribute ReverseArray.VB_Description = "Function to reverse array"
+    Dim i As Long, j As Long
+    Dim tmp As Variant
+    
+    j = UBound(arr)
+    For i = 0 To (j / 2)
+        tmp = arr(i)
+        arr(i) = arr(j)
+        arr(j) = tmp
+        j = j - 1
+    Next i
+    
+    ReverseArray = arr
+End Function
+
+'Function to shuffle an array
+Public Function ShuffleArray(ByVal arr As Variant) As Variant
+Attribute ShuffleArray.VB_Description = "Function to shuffle an array"
+    Dim n As Long, j As Long
+    Dim tmp As Variant, tmpArr As Variant
+    
+    Randomize
+    
+    ReDim tmpArr(UBound(arr))
+    
+    For n = 0 To UBound(arr)
+        tmpArr(n) = arr(n)
+    Next n
+    
+    For n = 0 To UBound(arr)
+        j = CLng((((UBound(arr)) - n) * Rnd) + n)
+        tmp = tmpArr(n)
+        tmpArr(n) = tmpArr(j)
+        tmpArr(j) = tmp
+    Next n
+    
+    ShuffleArray = tmpArr
+End Function
+
 'Function to sort a dictionary by keys
 '0 and default for ascending sort
 '1 for descending sort
-Function SortDictionaryByKey(dic As Object, Optional order As Integer = 0) As Scripting.Dictionary
+Public Function SortDictionaryByKey(ByVal dic As Object, Optional ByVal order As Integer = 0) As Scripting.Dictionary
 Attribute SortDictionaryByKey.VB_Description = "Function to sort a dictionary by keys\r\n0 and default for ascending sort\r\n1 for descending sort"
     Dim arrList As Object
     Dim key As Variant
@@ -68,7 +234,7 @@ End Function
 'Function to sort dictionary by values
 '0 and default for ascending sort
 '1 for descending sort
-Function SortDictionaryByValue(dic As Scripting.Dictionary, Optional order As Integer = 0) As Scripting.Dictionary
+Public Function SortDictionaryByValue(ByVal dic As Scripting.Dictionary, Optional ByVal order As Integer = 0) As Scripting.Dictionary
 Attribute SortDictionaryByValue.VB_Description = "Function to sort dictionary by values\r\n0 and default for ascending sort\r\n1 for descending sort"
     Dim arrayList As Object
     Dim tmpDic As New Scripting.Dictionary
@@ -123,124 +289,15 @@ errorObjectType:
     End If
 End Function
 
-'Function to remove duplicates from an array
-Public Function removeDuplicates(arr As Variant) As Variant
-Attribute removeDuplicates.VB_Description = "Function to remove duplicates from an array"
-    Dim coll As New Collection
-    Dim i As Long, cpt As Long
-    Dim tmp As Variant
+'Function to get the union between two arrays
+Public Function Union(ByVal arrLeft As Variant, ByVal arrRight As Variant) As Variant
+Attribute Union.VB_Description = "Function to get the union between two arrays"
+    Dim elem As Variant
     
-    ReDim tmp(UBound(arr))
-    
-    For i = LBound(arr) To UBound(arr)
-        
-        On Error Resume Next
-        coll.Add CStr(arr(i)), CStr(arr(i))
-        
-        If Err.number > 0 Then
-            On Error GoTo 0
-        Else
-            tmp(cpt) = arr(i)
-            cpt = cpt + 1
+    Union = arrLeft
+    For Each elem In arrRight
+        If (Not Contains(Union, elem)) Then
+            AddArray elem, Union
         End If
-    Next i
-    
-    ReDim Preserve tmp(cpt - 1)
-    removeDuplicates = tmp
-End Function
-
-'Function to reverse array
-Public Function reverseArray(arr As Variant) As Variant
-Attribute reverseArray.VB_Description = "Function to reverse array"
-    Dim i As Long, j As Long
-    Dim tmp As Variant
-    
-    j = UBound(arr)
-    For i = 0 To (j / 2)
-        tmp = arr(i)
-        arr(i) = arr(j)
-        arr(j) = tmp
-        j = j - 1
-    Next i
-    
-    reverseArray = arr
-End Function
-
-'Function to shuffle an array
-Public Function shuffleArray(arr As Variant) As Variant
-Attribute shuffleArray.VB_Description = "Function to shuffle an array"
-    Dim n As Long, j As Long
-    Dim tmp As Variant, tmpArr As Variant
-    
-    Randomize
-    
-    ReDim tmpArr(UBound(arr))
-    
-    For n = 0 To UBound(arr)
-        tmpArr(n) = arr(n)
-    Next n
-    
-    For n = 0 To UBound(arr)
-        j = CLng((((UBound(arr)) - n) * Rnd) + n)
-        tmp = tmpArr(n)
-        tmpArr(n) = tmpArr(j)
-        tmpArr(j) = tmp
-    Next n
-    
-    shuffleArray = tmpArr
-End Function
-
-'Function to check if array contains value
-Public Function contains(arr As Variant, value As Variant) As Boolean
-Attribute contains.VB_Description = "Function to check if array contains value"
-    Dim i As Long
-    
-    contains = False
-    For i = 0 To UBound(arr)
-        If value = arr(i) Then
-            contains = True
-            Exit Function
-        End If
-    Next i
-End Function
-
-'Function to get position of first index of a value in an array
-'If value is not found in array, return -1
-Public Function indexOf(arr As Variant, value As Variant) As Long
-Attribute indexOf.VB_Description = "Function to get position of first index of a value in an array\r\nIf value is not found in array, return -1"
-    Dim i As Long
-    
-    indexOf = -1
-    For i = 0 To UBound(arr)
-        If value = arr(i) Then
-            indexOf = i
-            Exit Function
-        End If
-    Next i
-End Function
-
-'Function to remove a specific value from an array (only first instance in the array)
-Public Function remove(arr As Variant, value As Variant) As Variant
-Attribute remove.VB_Description = "Function to remove a specific value from an array (only first instance in the array)"
-    Dim i As Long, pos As Long
-    Dim tmpArr As Variant
-    
-    pos = indexOf(arr, value)
-    
-    If pos = -1 Then
-        ReDim tmpArr(UBound(arr))
-        For i = 0 To UBound(arr) - 1
-            tmpArr(i) = arr(i)
-        Next i
-    Else
-        ReDim tmpArr(UBound(arr) - 1)
-        For i = 0 To pos - 1
-            tmpArr(i) = arr(i)
-        Next i
-        For i = pos + 1 To UBound(arr) - 1
-            tmpArr(i) = arr(i)
-        Next i
-    End If
-    
-    remove = tmpArr
+    Next elem
 End Function

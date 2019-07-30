@@ -6,8 +6,8 @@ Option Explicit
 'Differencing leap and non leap years with time on a 24H format
 'Dates can be written without the time or time without date (respectively dd/mm/yyyy or HH:mm:ss)
 'Need to activate the reference "Microsoft VBScrpt Regular Expressions 5.5"
-Public Function isValidDate(value As String) As Boolean
-Attribute isValidDate.VB_Description = "Check if string is valid date"
+Public Function IsValidDate(ByVal value As String) As Boolean
+Attribute IsValidDate.VB_Description = "Check if string is valid date"
     Dim reg As New VBScript_RegExp_55.RegExp
     
     reg.Pattern = "^(?=\d)(?:(?!(?:(?:0?[5-9]|1[0-4])(?:\.|-|\/)10(?:\.|-|\/)(?:1582))|" & _
@@ -18,6 +18,6 @@ Attribute isValidDate.VB_Description = "Check if string is valid date"
         "(1[012]|(?:0?[1-9]))\2((?=(?:00(?:4[0-5]|[0-3]?\d)\x20BC)|(?:\d{4}(?:$|(?=\x20\d)\x20)))" & _
         "\d{4}(?:\x20BC)?)(?:$|(?=\x20\d)\x20))?((?:(?:0?[1-9]|1[012])(?::[0-5]\d){0,2}(?:\x20[aApP][mM]))" & _
         "|(?:[01]\d|2[0-3])(?::[0-5]\d){1,2})?$"
-    isValidDate = reg.test(value)
+    IsValidDate = reg.test(value)
     Set reg = Nothing
 End Function

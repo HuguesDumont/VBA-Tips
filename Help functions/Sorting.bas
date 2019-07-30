@@ -3,8 +3,8 @@ Attribute VB_Description = "Functions to sort array"
 Option Explicit
 
 'Bubble sort
-Public Function bubbleSort(arr As Variant) As Variant
-Attribute bubbleSort.VB_Description = "Simple bubble sort"
+Public Sub BubbleSort(ByRef arr As Variant)
+Attribute BubbleSort.VB_Description = "Simple bubble sort"
     Dim i As Long, j As Long
     Dim tmp As Variant
     Dim changed As Boolean
@@ -24,19 +24,16 @@ Attribute bubbleSort.VB_Description = "Simple bubble sort"
         If Not changed Then
             Exit For
         End If
-        
     Next j
-    
-    bubbleSort = arr
-End Function
+End Sub
 
 'Insertion sort
-Public Function insertionSort(arr As Variant) As Variant
-Attribute insertionSort.VB_Description = "Simple insertion sort"
+Public Sub InsertionSort(ByRef arr As Variant)
+Attribute InsertionSort.VB_Description = "Simple insertion sort"
     Dim Temp As Variant
     Dim i As Long, j As Long
     
-    For i = 1 To UBound(arr)
+    For i = 0 To UBound(arr)
         Temp = arr(i)
         j = i - 1
         Do While arr(j) > Temp
@@ -48,12 +45,11 @@ Attribute insertionSort.VB_Description = "Simple insertion sort"
         Loop
         arr(j + 1) = Temp
     Next i
-    insertionSort = arr
-End Function
+End Sub
 
 'Selection sort
-Public Function selectionSort(arr As Variant) As Variant
-Attribute selectionSort.VB_Description = "Simple selection sort"
+Public Sub SelectionSort(ByRef arr As Variant)
+Attribute SelectionSort.VB_Description = "Simple selection sort"
     Dim i As Long, j As Long, k As Long
     Dim tmp As Variant
     
@@ -67,17 +63,16 @@ Attribute selectionSort.VB_Description = "Simple selection sort"
             End If
         Next
     Next
-    selectionSort = arr
-End Function
+End Sub
 
 'Quick sort
-Public Sub quickSort(ByRef arr As Variant)
-Attribute quickSort.VB_Description = "Quick sort using recursiveQuickSort"
-    Call quickSortRecursive(arr, 0, UBound(arr))
+Public Sub QuickSort(ByRef arr As Variant)
+Attribute QuickSort.VB_Description = "Quick sort using recursiveQuickSort"
+    Call QuickSortRecursive(arr, 0, UBound(arr))
 End Sub
 
 'Recursive quick sort
-Private Sub quickSortRecursive(ByRef arr As Variant, ByVal leftIndex As Variant, ByVal rightIndex As Variant)
+Private Sub QuickSortRecursive(ByRef arr As Variant, ByVal leftIndex As Variant, ByVal rightIndex As Variant)
     Dim i As Variant, j As Variant, tmp As Variant, pivot As Variant
     
     i = leftIndex
@@ -101,6 +96,6 @@ Private Sub quickSortRecursive(ByRef arr As Variant, ByVal leftIndex As Variant,
         
     Loop Until i > j
         
-    If leftIndex < j Then Call quickSortRecursive(arr, leftIndex, j)
-    If i < rightIndex Then Call quickSortRecursive(arr, i, rightIndex)
+    If leftIndex < j Then Call QuickSortRecursive(arr, leftIndex, j)
+    If i < rightIndex Then Call QuickSortRecursive(arr, i, rightIndex)
 End Sub

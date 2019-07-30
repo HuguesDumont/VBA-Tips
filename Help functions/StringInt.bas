@@ -4,18 +4,18 @@ Option Explicit
 
 'Function to check if string is an integer
 'Need to activate the reference "Microsoft VBScrpt Regular Expressions 5.5"
-Public Function isInteger(value As String) As Boolean
-Attribute isInteger.VB_Description = "Function to check if string is an integer\r\nNeed to activate the reference ""Microsoft VBScrpt Regular Expressions 5.5"""
+Public Function IsInteger(ByVal value As String) As Boolean
+Attribute IsInteger.VB_Description = "Function to check if string is an integer\r\nNeed to activate the reference ""Microsoft VBScrpt Regular Expressions 5.5"""
     Dim reg As New VBScript_RegExp_55.RegExp
     Const INT_MIN As Integer = -32768
     Const INT_MAX As Integer = 32767
     
     reg.Pattern = "^(-)?(\d)+$"
-    isInteger = False
+    IsInteger = False
     If reg.test(value) Then
         On Error GoTo capacityOverflow
         If CInt(value) >= INT_MIN And CInt(value) <= INT_MAX Then
-            isInteger = True
+            IsInteger = True
         End If
     End If
     Set reg = Nothing
@@ -29,60 +29,60 @@ End Function
 
 'Function to check if string is an integer over zero
 'It uses the "isInteger" function implemented before
-Public Function isIntPos(value As String) As Boolean
-Attribute isIntPos.VB_Description = "Function to check if string is an integer over zero\r\nIt uses the ""isInteger"" function implemented before"
-    isIntPos = False
-    If isInteger(value) Then
+Public Function IsIntPos(ByVal value As String) As Boolean
+Attribute IsIntPos.VB_Description = "Function to check if string is an integer over zero\r\nIt uses the ""isInteger"" function implemented before"
+    IsIntPos = False
+    If IsInteger(value) Then
         If CInt(value) > 0 Then
-            isIntPos = True
+            IsIntPos = True
         End If
     End If
 End Function
 
 'Function to check if string is integer below zero
 'It uses the "isInteger" function implemented before
-Public Function isIntNeg(value As String) As Boolean
-Attribute isIntNeg.VB_Description = "Function to check if string is integer below zero\r\nIt uses the ""isInteger"" function implemented before"
-    isIntNeg = False
-    If isInteger(value) Then
+Public Function IsIntNeg(ByVal value As String) As Boolean
+Attribute IsIntNeg.VB_Description = "Function to check if string is integer below zero\r\nIt uses the ""isInteger"" function implemented before"
+    IsIntNeg = False
+    If IsInteger(value) Then
         If CInt(value) < 0 Then
-            isIntNeg = True
+            IsIntNeg = True
         End If
     End If
 End Function
 
 'Function to check if string is zero (integer 0)
 'It uses the "isInteger" function implemented before
-Public Function isZero(value As String) As Boolean
-Attribute isZero.VB_Description = "Function to check if string is zero (integer 0)\r\nIt uses the ""isInteger"" function implemented before"
-    isZero = False
-    If isInteger(value) Then
+Public Function IsZero(ByVal value As String) As Boolean
+Attribute IsZero.VB_Description = "Function to check if string is zero (integer 0)\r\nIt uses the ""isInteger"" function implemented before"
+    IsZero = False
+    If IsInteger(value) Then
         If CInt(value) = 0 Then
-            isZero = True
+            IsZero = True
         End If
     End If
 End Function
 
 'Function to check if string is integer above or equal zero
-'It uses the "isInteger" function implement before
-Public Function isIntPosOrZero(value As String) As Boolean
-Attribute isIntPosOrZero.VB_Description = "Function to check if string is integer above or equal zero\r\nIt uses the ""isInteger"" function implement before"
-    isIntPosOrZero = False
-    If isInteger(value) Then
+'It uses the "isInteger" function implemented before
+Public Function IsIntPosOrZero(ByVal value As String) As Boolean
+Attribute IsIntPosOrZero.VB_Description = "Function to check if string is integer above or equal zero\r\nIt uses the ""isInteger"" function implement before"
+    IsIntPosOrZero = False
+    If IsInteger(value) Then
         If CInt(value) >= 0 Then
-            isIntPosOrZero = True
+            IsIntPosOrZero = True
         End If
     End If
 End Function
 
 'Function to check if string is integer above or equal zero
-'It uses the "isInteger" function implement before
-Public Function isIntNegOrZero(value As String) As Boolean
-Attribute isIntNegOrZero.VB_Description = "Function to check if string is integer above or equal zero\r\nIt uses the ""isInteger"" function implement before"
-    isIntNegOrZero = False
-    If isInteger(value) Then
+'It uses the "isInteger" function implemented before
+Public Function IsIntNegOrZero(ByVal value As String) As Boolean
+Attribute IsIntNegOrZero.VB_Description = "Function to check if string is integer above or equal zero\r\nIt uses the ""isInteger"" function implement before"
+    IsIntNegOrZero = False
+    If IsInteger(value) Then
         If CInt(value) <= 0 Then
-            isIntNegOrZero = True
+            IsIntNegOrZero = True
         End If
     End If
 End Function

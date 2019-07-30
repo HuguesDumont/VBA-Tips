@@ -22,9 +22,9 @@ Option Explicit
 '  - 15 : any ascii lower alphabetical char (excluding extended ascii table)
 '  - 16 : any numeric char (from 0 to 9)
 '  - 17 : any special printable char (including extended ascii table ==> including diacritics, excluding standard numerics, excluding blank char like spaces, tabs or cariage returns)
-Public Function rndChar(choice As Integer) As String
-Attribute rndChar.VB_Description = "This function returns a random char from different string categories. Choices are : \r- 0 : any printable ascii char (including extended ascii table)\r- 1 : any printable ascii char (including extended ascii table, excluding blank char like spaces)"
-Attribute rndChar.VB_ProcData.VB_Invoke_Func = " \n14"
+Public Function RndChar(ByVal choice As Integer) As String
+Attribute RndChar.VB_Description = "This function returns a random char from different string categories. Choices are : \r- 0 : any printable ascii char (including extended ascii table)\r- 1 : any printable ascii char (including extended ascii table, excluding blank char like spaces)"
+Attribute RndChar.VB_ProcData.VB_Invoke_Func = " \n14"
     Dim rngs(18) As String
     
     rngs(0) = " !" & Chr(34) & "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—˜™š›œŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
@@ -46,25 +46,25 @@ Attribute rndChar.VB_ProcData.VB_Invoke_Func = " \n14"
     rngs(16) = "0123456789"
     rngs(17) = "!" & Chr(34) & "#$%&'()*+,-./:;<=>?@[\]^_`{|}~€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—˜™š›œŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
 
-    rndChar = Mid(rngs(choice), intFunctions.intRndBetween(1, Len(rngs(choice))), 1) 'Using the "intRndBetween" from "IntFunctions" here
+    RndChar = Mid(rngs(choice), intFunctions.IntRndBetween(1, Len(rngs(choice))), 1) 'Using the "intRndBetween" from "IntFunctions" here
 End Function
 
 'sub to sort an array of string in lexicogrpahic order (using extended ascii table values of char in ascending order)
 'Needs the "stringQuickSortAsc" sub to work
 'Default ubound for array is 0 and max index is ubound-1
-Public Sub stringSortAsc(ByRef arr() As String)
-    Call stringQuickSortAsc(arr, 0, UBound(arr) - 1)
+Public Sub StringSortAsc(ByRef arr() As String)
+    Call StringQuickSortAsc(arr, 0, UBound(arr) - 1)
 End Sub
 
 'sub to sort an array of string in reverse lexicographic order (using extended ascii table values of char in descending order)
 'Needs the "stringQuickSortDesc" sub to work
 'Default ubound for array is 0 and max index is ubound-1
-Public Sub stringSortDesc(ByRef arr() As String)
-    Call stringQuickSortDesc(arr, 0, UBound(arr) - 1)
+Public Sub StringSortDesc(ByRef arr() As String)
+    Call StringQuickSortDesc(arr, 0, UBound(arr) - 1)
 End Sub
 
 'recursive quicksort for lexicographic sort of strig array (using extended ascii table values of char in ascending order)
-Public Sub stringQuickSortAsc(ByRef arr() As String, ByVal leftIndex As Long, ByVal rightIndex As Long)
+Public Sub StringQuickSortAsc(ByRef arr() As String, ByVal leftIndex As Long, ByVal rightIndex As Long)
     Dim i As Long, j As Long, tmp As String, pivot As String
     
     i = leftIndex
@@ -88,12 +88,12 @@ Public Sub stringQuickSortAsc(ByRef arr() As String, ByVal leftIndex As Long, By
         
     Loop Until i > j
         
-    If leftIndex < j Then Call stringQuickSortAsc(arr(), leftIndex, j)
-    If i < rightIndex Then Call stringQuickSortAsc(arr(), i, rightIndex)
+    If leftIndex < j Then Call StringQuickSortAsc(arr(), leftIndex, j)
+    If i < rightIndex Then Call StringQuickSortAsc(arr(), i, rightIndex)
 End Sub
 
 'recursive quicksort for reverse lexicographic sort of strig array (using extended ascii table values of char in descending order)
-Public Sub stringQuickSortDesc(arr() As String, leftIndex As Long, rightIndex As Long)
+Public Sub StringQuickSortDesc(ByRef arr() As String, ByVal leftIndex As Long, ByVal rightIndex As Long)
     Dim pivot As String, tmp As String, i As Long, j As Long
 
     i = leftIndex
@@ -120,31 +120,8 @@ Public Sub stringQuickSortDesc(arr() As String, leftIndex As Long, rightIndex As
 
     Wend
 
-    If (leftIndex < j) Then stringQuickSortDesc arr, leftIndex, j
-    If (i < rightIndex) Then stringQuickSortDesc arr, i, rightIndex
-End Sub
-
-'More powerful sort of string is to use the System.Collections.ArrayList (lexicographical ascending sort using ascii table)
-'Example of using the System.Collections.ArrayList :
-Public Sub exampleArrayList()
-    Dim arrList As Object
-    Dim i As Integer
-    
-    Set arrList = CreateObject("System.Collections.ArrayList")
-    
-    arrList.Add "reogbeor"
-    arrList.Add "onreogn"
-    arrList.Add "354"
-    arrList.Add "1520"
-    arrList.Add "anfeomz"
-    arrList.Add "à_çu_"
-    arrList.Add "!ren:rze,re"
-
-    arrList.Sort
-    
-    For i = 0 To arrList.Count - 1
-        Debug.Print arrList.Item(i)
-    Next i
+    If (leftIndex < j) Then StringQuickSortDesc arr, leftIndex, j
+    If (i < rightIndex) Then StringQuickSortDesc arr, i, rightIndex
 End Sub
 
 'Function to generate random password (not perfect, but works fine and generate really hard passwords to crack)
@@ -156,11 +133,11 @@ End Sub
 '  - "num" ==> minimum number of numeric characters you want in your password
 '  - "spec" ==> minimum number of special characters you want in your password
 'Works with the "rndChar" function from "StringFunctions" and the "shuffleString" from "StringFunctions"
-Public Function randomPass(Optional ByVal taille As Integer = 8, Optional ByVal lowC As Integer = 1, Optional ByVal upC As Integer = 1, _
+Public Function RandomPass(Optional ByVal taille As Integer = 8, Optional ByVal lowC As Integer = 1, Optional ByVal upC As Integer = 1, _
                             Optional ByVal num As Integer = 1, Optional ByVal spec As Integer = 1) As String
     Dim i As Long, minChar As Long
     
-    randomPass = ""
+    RandomPass = ""
     
     minChar = lowC + upC + num + spec
     'Verifying that wanted length can get all char conditions
@@ -173,50 +150,46 @@ Public Function randomPass(Optional ByVal taille As Integer = 8, Optional ByVal 
     
     'Generating minimum small letters
     While lowC > 0
-        randomPass = randomPass & StringFunctions.rndChar(15)
+        RandomPass = RandomPass & StringFunctions.RndChar(15)
         lowC = lowC - 1
     Wend
     
     'Generating minimum capital letters
     While upC > 0
-        randomPass = randomPass & StringFunctions.rndChar(14)
+        RandomPass = RandomPass & StringFunctions.RndChar(14)
         upC = upC - 1
     Wend
     
     'Generating minimum numeric characters
     While num > 0
-        randomPass = randomPass & StringFunctions.rndChar(16)
+        RandomPass = RandomPass & StringFunctions.RndChar(16)
         num = num - 1
     Wend
     
     'Generating minimum special characters
     While spec > 0
-        randomPass = randomPass & StringFunctions.rndChar(17)
+        RandomPass = RandomPass & StringFunctions.RndChar(17)
         spec = spec - 1
     Wend
     
-    While Len(randomPass) <= taille
-        randomPass = randomPass & StringFunctions.rndChar(1)
+    While Len(RandomPass) <= taille
+        RandomPass = RandomPass & StringFunctions.RndChar(1)
     Wend
-    randomPass = shuffleString(randomPass)
+    RandomPass = ShuffleString(RandomPass)
 End Function
-
-Sub test()
-    Debug.Print StringFunctions.randomPass
-End Sub
 
 'Function to shuffle a string randomly
 'Works with the "LongRndBetween" from "LongFunctions", the "stringToArray" function from "StringFunctions"
 '          and the "arrayToString" from "StringFunctions"
-Public Function shuffleString(val As String) As String
+Public Function ShuffleString(ByVal val As String) As String
     Dim n As Long, j As Long
     Dim tmp As String
     Dim tmpArr() As String
 
-    tmpArr = StringFunctions.stringToArray(val)
+    tmpArr = StringFunctions.StringToArray(val)
     
     For n = 0 To UBound(tmpArr) - 1
-        j = LongFunctions.longRndBetween(n, UBound(tmpArr) - 1)
+        j = LongFunctions.LongRndBetween(n, UBound(tmpArr) - 1)
         If n <> j Then
             tmp = tmpArr(n)
             tmpArr(n) = tmpArr(j)
@@ -224,11 +197,11 @@ Public Function shuffleString(val As String) As String
         End If
     Next n
     
-    shuffleString = stringArrayToString(tmpArr)
+    ShuffleString = StringArrayToString(tmpArr)
 End Function
 
 'Function to convert string to an array within each char is separated
-Public Function stringToArray(val As String) As Variant
+Public Function StringToArray(ByVal val As String) As Variant
     Dim i As Long
     Dim tmp() As String
     
@@ -238,38 +211,91 @@ Public Function stringToArray(val As String) As Variant
         tmp(i - 1) = Mid(val, i, 1)
     Next i
     
-    stringToArray = tmp
+    StringToArray = tmp
 End Function
 
 'Function to convert a string array to string
-Public Function stringArrayToString(arr() As String) As String
+Public Function StringArrayToString(ByRef arr() As String) As String
     Dim i As Long
     
-    stringArrayToString = ""
+    StringArrayToString = ""
     For i = 0 To UBound(arr) - 1
-        stringArrayToString = stringArrayToString & CStr(arr(i))
+        StringArrayToString = StringArrayToString & CStr(arr(i))
     Next i
 End Function
 
 'Function to convert a variant array to string
-Public Function variantArrayToString(arr() As Variant) As String
+Public Function VariantArrayToString(arr() As Variant) As String
     Dim i As Long
     
-    variantArrayToString = ""
+    VariantArrayToString = ""
     For i = 0 To UBound(arr) - 1
-        variantArrayToString = variantArrayToString & CStr(arr(i))
+        VariantArrayToString = VariantArrayToString & CStr(arr(i))
     Next i
 End Function
 
 'Function to find a String value in String array (returns a Long : -1 if not found, position in array if found)
-Public Function findString(arr() As String, val As String) As Long
+Public Function FindString(ByRef arr() As String, ByVal val As String) As Long
     Dim i As Long
     
-    findString = -1
+    FindString = -1
     For i = 0 To UBound(arr) - 1
         If arr(i) = val Then
-            findString = i
+            FindString = i
             Exit Function
         End If
+    Next i
+End Function
+
+'Function to check if string starts with other string (str starts with start) (no trim)
+Public Function StartWith(ByVal str As String, ByVal start As String, Optional ByVal withCase As Boolean = True) As Boolean
+    If (withCase) Then
+        StartWith = (Mid(str, 1, Len(start)) = start)
+    Else
+        StartWith = (Mid(UCase(str), 1, Len(start)) = UCase(start))
+    End If
+End Function
+
+'Function to check if string ends with other string (str ends with ending) (no trim)
+Public Function EndWith(ByVal str As String, ByVal ending As String, Optional ByVal withCase As Boolean = True) As Boolean
+    If (withCase) Then
+        EndWith = (Mid(str, Len(str) - Len(ending) + 1) = ending)
+    Else
+        EndWith = (Mid(UCase(str), Len(str) - Len(ending)) = UCase(ending))
+    End If
+End Function
+
+'Function to add x tabulations at beginning of string
+Public Function AddTabs(ByVal str As String, ByVal x As Integer) As String
+    While (x > 0)
+        str = Chr(9) & str
+    Wend
+    AddTabs = str
+End Function
+
+'Function to get position of first letter in string (returns 0 if there is no letter)
+Public Function PosFirstLetter(ByVal str As String) As Long
+    Dim chara As Integer
+    
+    PosFirstLetter = 1
+    While (PosFirstLetter <= Len(str))
+        chara = Asc(Mid(str, PosFirstLetter, 1))
+        If ((chara >= 65 And chara <= 90) Or (chara >= 97 And chara <= 122)) Then Exit Function
+        PosFirstLetter = PosFirstLetter + 1
+    Wend
+    PosFirstLetter = 0
+End Function
+
+'Function to get number of occurences of string findStr in string str
+Public Function CountOccurences(ByVal str As String, ByVal findStr As String, Optional ByVal withCase As Boolean = True) As Long
+    Dim i As Long
+    
+    If (Not withCase) Then
+        str = UCase(str)
+        findStr = UCase(findStr)
+    End If
+    
+    For i = 1 To Len(str)
+        If (Mid(str, i, Len(findStr)) = findStr) Then CountOccurences = CountOccurences + 1
     Next i
 End Function

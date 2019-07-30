@@ -3,31 +3,31 @@ Attribute VB_Description = "Pre-made functions and subs using Long type\n"
 Option Explicit
 
 'Function to generate an long integer (Long) between 2 values (min, max)
-Public Function longRndBetween(min As Long, max As Long) As Long
-Attribute longRndBetween.VB_Description = "Function to generate an long integer (Long) between 2 values (min, max)"
+Public Function LongRndBetween(ByVal min As Long, ByVal max As Long) As Long
+Attribute LongRndBetween.VB_Description = "Function to generate an long integer (Long) between 2 values (min, max)"
     Randomize
-    longRndBetween = CLng((max - min + 1) * Rnd + min)
+    LongRndBetween = CLng((max - min + 1) * Rnd + min)
 End Function
 
 'Sub to sort an array of long integer ascending
 'Needs the "longQuickSortAsc" sub to work
 'Default ubound for array is 0 and max index is ubound-1
-Public Sub longSortAsc(ByRef arr() As Long)
-Attribute longSortAsc.VB_Description = "Sub to sort an array of long integer ascending\r\nNeeds the ""longQuickSortAsc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
-    Call longQuickSortAsc(arr, 0, UBound(arr))
+Public Sub LongSortAsc(ByRef arr() As Long)
+Attribute LongSortAsc.VB_Description = "Sub to sort an array of long integer ascending\r\nNeeds the ""longQuickSortAsc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
+    Call LongQuickSortAsc(arr, 0, UBound(arr))
 End Sub
 
 'Sub to sort an array of long integer descending
 'Needs the "longQuickSortDesc" sub to work
 'Default ubound for array is 0 and max index is ubound-1
-Public Sub longSortDesc(ByRef arr() As Long)
-Attribute longSortDesc.VB_Description = "Sub to sort an array of long integer descending\r\nNeeds the ""longQuickSortDesc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
-    Call longQuickSortDesc(arr, 0, UBound(arr))
+Public Sub LongSortDesc(ByRef arr() As Long)
+Attribute LongSortDesc.VB_Description = "Sub to sort an array of long integer descending\r\nNeeds the ""longQuickSortDesc"" sub to work\r\nDefault ubound for array is 0 and max index is ubound-1"
+    Call LongQuickSortDesc(arr, 0, UBound(arr))
 End Sub
 
 'Recursive quicksort for ascending sort of long int array
-Public Sub longQuickSortAsc(ByRef arr() As Long, ByVal leftIndex As Long, ByVal rightIndex As Long)
-Attribute longQuickSortAsc.VB_Description = "Recursive quicksort for ascending sort of long int array"
+Public Sub LongQuickSortAsc(ByRef arr() As Long, ByVal leftIndex As Long, ByVal rightIndex As Long)
+Attribute LongQuickSortAsc.VB_Description = "Recursive quicksort for ascending sort of long int array"
     Dim i As Long, j As Long, tmp As Long, pivot As Long
     
     i = leftIndex
@@ -51,13 +51,13 @@ Attribute longQuickSortAsc.VB_Description = "Recursive quicksort for ascending s
         
     Loop Until i > j
         
-    If leftIndex < j Then Call longQuickSortAsc(arr(), leftIndex, j)
-    If i < rightIndex Then Call longQuickSortAsc(arr(), i, rightIndex)
+    If leftIndex < j Then Call LongQuickSortAsc(arr(), leftIndex, j)
+    If i < rightIndex Then Call LongQuickSortAsc(arr(), i, rightIndex)
 End Sub
 
 'Recursive quicksort for descending sort of long int array
-Public Sub longQuickSortDesc(arr() As Long, leftIndex As Long, rightIndex As Long)
-Attribute longQuickSortDesc.VB_Description = "Recursive quicksort for descending sort of long int array"
+Public Sub LongQuickSortDesc(ByRef arr() As Long, ByVal leftIndex As Long, ByVal rightIndex As Long)
+Attribute LongQuickSortDesc.VB_Description = "Recursive quicksort for descending sort of long int array"
     Dim pivot As Long, tmp As Long, i As Long, j As Long
 
     i = leftIndex
@@ -84,59 +84,59 @@ Attribute longQuickSortDesc.VB_Description = "Recursive quicksort for descending
 
     Wend
 
-    If (leftIndex < j) Then longQuickSortDesc arr, leftIndex, j
-    If (i < rightIndex) Then longQuickSortDesc arr, i, rightIndex
+    If (leftIndex < j) Then LongQuickSortDesc arr, leftIndex, j
+    If (i < rightIndex) Then LongQuickSortDesc arr, i, rightIndex
 End Sub
 
 'Function to sum all values in long array
-Public Function sumLongArray(arr() As Long) As Long
-Attribute sumLongArray.VB_Description = "Function to sum all values in long array"
+Public Function SumLongArray(ByRef arr() As Long) As Long
+Attribute SumLongArray.VB_Description = "Function to sum all values in long array"
     Dim i As Long
     
-    sumLongArray = 0
+    SumLongArray = 0
     For i = 0 To UBound(arr)
-        sumLongArray = sumLongArray + arr(i)
+        SumLongArray = SumLongArray + arr(i)
     Next i
 End Function
 
 'Function to calculate average value of long array (!CARERUL! returns result as double)
 'Works with the "sumLongArray" from LongFunctions
-Public Function averageLong(arr() As Long) As Double
-Attribute averageLong.VB_Description = "Function to calculate average value of long array (!CARERUL! returns result as double)\r\nWorks with the ""sumLongArray"" from LongFunctions"
-    averageInt = CDbl(sumIntArray(arr)) / CDbl(UBound(arr))
+Public Function AverageLong(arr() As Long) As Double
+Attribute AverageLong.VB_Description = "Function to calculate average value of long array (!CARERUL! returns result as double)\r\nWorks with the ""sumLongArray"" from LongFunctions"
+    AverageInt = CDbl(SumIntArray(arr)) / CDbl(UBound(arr))
 End Function
 
 'Function to return the max of Long array
-Public Function maxLong(arr() As Long) As Long
-Attribute maxLong.VB_Description = "Function to return the max of Long array"
+Public Function MaxLong(ByRef arr() As Long) As Long
+Attribute MaxLong.VB_Description = "Function to return the max of Long array"
     Dim i As Long
     
-    maxLong = arr(0)
+    MaxLong = arr(0)
     For i = 1 To UBound(arr)
-        If maxLong < arr(i) Then maxLong = arr(i)
+        If MaxLong < arr(i) Then MaxLong = arr(i)
     Next i
 End Function
 
 'Function to return the min of Long array
-Public Function minLong(arr() As Long) As Long
-Attribute minLong.VB_Description = "Function to return the min of Long array"
+Public Function MinLong(ByRef arr() As Long) As Long
+Attribute MinLong.VB_Description = "Function to return the min of Long array"
     Dim i As Long
     
-    minLong = arr(0)
+    MinLong = arr(0)
     For i = 1 To UBound(arr)
-        If minLong > arr(i) Then minLong = arr(i)
+        If MinLong > arr(i) Then MinLong = arr(i)
     Next i
 End Function
 
 'Function to find a Long value in Long array (returns a Long : -1 if not found, position in array if found)
-Public Function findLong(arr() As Long, val As Long) As Long
-Attribute findLong.VB_Description = "Function to find a Long value in Long array (returns a Long : -1 if not found, position in array if found)"
+Public Function FindLong(ByRef arr() As Long, ByVal val As Long) As Long
+Attribute FindLong.VB_Description = "Function to find a Long value in Long array (returns a Long : -1 if not found, position in array if found)"
     Dim i As Long
     
-    findLong = -1
+    FindLong = -1
     For i = 0 To UBound(arr)
         If arr(i) = val Then
-            findLong = i
+            FindLong = i
             Exit Function
         End If
     Next i
