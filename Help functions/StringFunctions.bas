@@ -268,7 +268,7 @@ End Function
 'Function to add x tabulations at beginning of string
 Public Function AddTabs(ByVal str As String, ByVal x As Integer) As String
     While (x > 0)
-        str = Chr(9) & str
+        str = "    " & str
     Wend
     AddTabs = str
 End Function

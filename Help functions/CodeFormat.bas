@@ -4,10 +4,15 @@ Attribute VB_Name = "CodeFormat"
 '- Microsoft VBScript Regular Expressions 5.0
 Option Explicit
 
+Private tabSpaces As String
+
 'Function to add x tabulations at beginning of string
 Private Function AddTabs(ByVal str As String, ByVal x As Integer) As String
+    If (tabSpaces = "") Then
+        tabSpaces = "    "
+    End If
     While (x > 0)
-        str = Chr(9) & str
+        str = tabSpaces & str
         x = x - 1
     Wend
     AddTabs = str
@@ -116,11 +121,19 @@ End Function
 '- Correcting "Next" instruction without var
 '- Checking for non-used procedures, undefined procedure scope, incorrect procedure name (length > 30 and format <> ^([A-Z][a-zA-Z]([a-ZA-Z0-9]){1,28})$)
 '- Checking for procedures with more than 30 lines
-'-- Cutting lines upper than X characters
+'- Cutting lines upper than X characters
 '-- Checking for non-used var
 '--- Checking for code duplication
-Public Function FormatModule(ByVal moduleName As String) As String
+Public Function FormatModule(ByVal moduleName As String, Optional ByVal spaceTab As Integer = 4, Optional ByVal maxLen As Integer = 200) As String
+    Dim i As Integer
+    
+    tabSpaces = ""
+    For i = 1 To spaceTab
+        tabSpaces = tabSpaces & " "
+    Next i
+    
     FormatModule = FormatModule & CheckModuleName(moduleName)
+    Call WrapLines(moduleName, maxLen)
     Call SortModuleProc(moduleName)
     Call IndentCorrection(moduleName)
     Call CommentCorrection(moduleName)
@@ -329,6 +342,10 @@ Private Function FormatVar(ByVal codeLine As String) As String
     Dim elem() As String, txt As String, chaine As String
     Dim i As Long
     
+    If (tabSpaces = "") Then
+        tabSpaces = "    "
+    End If
+    
     FormatVar = ""
     arr = Split(Mid(codeLine, 2), ",")
     sortedVar = Array()
@@ -346,7 +363,7 @@ Private Function FormatVar(ByVal codeLine As String) As String
     
     chaine = ""
     For Each varDef In sortedVar
-        txt = Chr(9) & "Dim "
+        txt = tabSpaces & "Dim "
         For i = 0 To UBound(arr)
             If (Trim(CStr(Split(arr(i), " As ")(1))) = Trim(CStr(varDef))) Then
                 txt = txt & Trim(CStr(arr(i))) & ","
@@ -430,7 +447,7 @@ End Sub
 'If private then check in module only, else check in project
 Public Function CheckProcedureNames(ByVal moduleName As String) As String
     Dim regProcName As New VBScript_RegExp_55.RegExp
-    Dim codeMod As CodeModule, moduleCode As CodeModule
+    Dim codeMod As CodeModule, modulecode As CodeModule
     Dim projComp As VBComponent
     Dim trimLine As String, procedureName As String
     Dim i As Long, j As Long
@@ -440,7 +457,7 @@ Public Function CheckProcedureNames(ByVal moduleName As String) As String
     
     regProcName.Pattern = "^([A-Z][a-zA-Z]([\w])*)$"
     With codeMod
-        For i = 1 To .CountOfLines
+        For i = .CountOfDeclarationLines To .CountOfLines
             trimLine = Trim(.Lines(i, 1))
             If (IsProcedure(trimLine)) Then
                 found = False
@@ -476,16 +493,15 @@ End Function
 'Function to loop through module to check for procedure use
 Private Function UsedInModule(ByVal projComp As VBComponent, ByVal procedureName As String, Optional ByVal isPrivate As Boolean = True, Optional ByVal moduleName As String = "") As Boolean
     Dim trimLine As String
-    Dim moduleCode As CodeModule
+    Dim modulecode As CodeModule
     Dim j As Long
     
     UsedInModule = False
-    Set moduleCode = projComp.CodeModule
+    Set modulecode = projComp.CodeModule
     
-    With moduleCode
-        
+    With modulecode
         If (isPrivate) Then
-            For j = .CountOfDeclarationLines + 1 To .CountOfLines - .CountOfDeclarationLines
+            For j = .CountOfDeclarationLines + 1 To .CountOfLines
                 trimLine = Trim(.Lines(j, 1))
                 If (UsedCode(trimLine, procedureName, True) And (procedureName <> .ProcOfLine(j, vbext_pk_Proc))) Then
                     UsedInModule = True
@@ -493,10 +509,10 @@ Private Function UsedInModule(ByVal projComp As VBComponent, ByVal procedureName
                 End If
             Next j
         Else
-            For j = .CountOfDeclarationLines + 1 To .CountOfLines - .CountOfDeclarationLines
+            For j = .CountOfDeclarationLines + 1 To .CountOfLines
                 trimLine = Trim(.Lines(j, 1))
-                If (UsedCode(trimLine, procedureName, True) And ((procedureName <> moduleCode.ProcOfLine(j, vbext_pk_Proc)) _
-                        Or ((procedureName <> moduleCode.ProcOfLine(j, vbext_pk_Proc)) And (projComp.Name <> moduleName)))) Then
+                If (UsedCode(trimLine, procedureName, True) And ((procedureName <> modulecode.ProcOfLine(j, vbext_pk_Proc)) _
+                        Or ((procedureName <> modulecode.ProcOfLine(j, vbext_pk_Proc)) And (projComp.Name <> moduleName)))) Then
                     UsedInModule = True
                     Exit Function
                 End If
@@ -523,7 +539,7 @@ End Function
 
 'Function to check if a string is a procedure declaration
 Private Function IsProcedure(ByVal codeLine As String) As Boolean
-    IsProcedure = StartWithList(codeLine, Array("Public Function ", "Private Function ", "Function ", "Public Sub ", "Private Sub ", "Sub ", "Friend "))
+    IsProcedure = (StartWithList(codeLine, Array("Public Function ", "Private Function ", "Function ", "Public Sub ", "Private Sub ", "Sub ", "Friend ")) Or (InStr(codeLine, "Declare ") > 0))
 End Function
 
 'Function to check procedure length
@@ -555,4 +571,92 @@ Public Function CheckProcLength(ByVal moduleName As String) As String
             End If
         Next i
     End With
+End Function
+
+'Function to wrap lines upper than x characters in module
+Public Sub WrapLines(ByVal moduleName As String, Optional ByVal maxLen As Integer = 200)
+    Dim codeMod As CodeModule
+    Dim codeLine As String, wrappedLines() As String, splitLine() As String
+    Dim i As Long
+    Dim j As Integer
+    
+    Set codeMod = ThisWorkbook.VBProject.VBComponents(moduleName).CodeModule
+    
+    With codeMod
+        For i = .CountOfLines To 1 Step -1
+            codeLine = .Lines(i, 1)
+            If (Len(codeLine) > maxLen) Then
+                ReDim wrappedLines(Int(Len(codeLine) / maxLen) + 1)
+                For j = 0 To UBound(wrappedLines)
+                    splitLine = Split(WrapLine(codeLine, maxLen), Chr(13))
+                    wrappedLines(j) = splitLine(0)
+                    If (UBound(splitLine) > 0) Then
+                        codeLine = AddTabs(splitLine(1), CountTabulations(wrappedLines(0)) + 2)
+                    Else
+                        Exit For
+                    End If
+                Next j
+                .ReplaceLine i, Mid(Join(wrappedLines, Chr(13)), 1, Len(Join(wrappedLines, Chr(13))) - 1)
+            End If
+        Next i
+    End With
+End Sub
+
+'Function to get number of occurences of string findStr in string str
+Private Function CountOccurences(ByVal str As String, ByVal findStr As String, Optional ByVal withCase As Boolean = True) As Long
+    Dim i As Long
+    
+    If (Not withCase) Then
+        str = UCase(str)
+        findStr = UCase(findStr)
+    End If
+    
+    For i = 1 To Len(str)
+        If (Mid(str, i, Len(findStr)) = findStr) Then CountOccurences = CountOccurences + 1
+    Next i
+End Function
+
+'Function to wrap a line at last space before maxLen character
+Private Function WrapLine(ByVal codeLine As String, ByVal maxLen As Long) As String
+    Dim i As Long
+    Dim countString As Integer
+    
+    If Len(codeLine) > maxLen Then
+        i = 0
+Top:
+        If i = maxLen Then
+            WrapLine = codeLine
+            Exit Function
+        End If
+
+        If (Mid(codeLine, maxLen - i, 1) = " ") Then
+            If (CountOccurences(Mid(codeLine, 1, maxLen - i), Chr(34)) Mod 2 = 1) Then
+                WrapLine = Mid(codeLine, 1, maxLen - i) & Chr(34) & " & _ " & Chr(13) & Chr(34) & Mid(codeLine, maxLen - i + 1)
+            Else
+                WrapLine = Mid(codeLine, 1, maxLen - i) & "_ " & Chr(13) & Mid(codeLine, maxLen - i + 1)
+            End If
+        Else
+            i = i + 1
+            GoTo Top
+        End If
+    Else
+        WrapLine = codeLine
+    End If
+End Function
+
+'Function to count tabulations based on defined tab spaces
+Private Function CountTabulations(ByVal codeLine As String) As Integer
+    Dim i As Long
+    
+    If (tabSpaces = "") Then
+        tabSpaces = "    "
+    End If
+
+    i = 1
+    While (Mid(codeLine, i, 1) = " " And i <= Len(codeLine))
+        If (i Mod Len(tabSpaces) = 0) Then
+            CountTabulations = CountTabulations + 1
+        End If
+        i = i + 1
+    Wend
 End Function
