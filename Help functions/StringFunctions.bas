@@ -23,12 +23,12 @@ Option Explicit
 '  - 16 : any numeric char (from 0 to 9)
 '  - 17 : any special printable char (including extended ascii table ==> including diacritics, excluding standard numerics, excluding blank char like spaces, tabs or cariage returns)
 Public Function RndChar(ByVal choice As Integer) As String
-Attribute RndChar.VB_Description = "This function returns a random char from different string categories. Choices are : \r- 0 : any printable ascii char (including extended ascii table)\r- 1 : any printable ascii char (including extended ascii table, excluding blank char like spaces)"
-Attribute RndChar.VB_ProcData.VB_Invoke_Func = " \n14"
     Dim rngs(18) As String
     
-    rngs(0) = " !" & Chr(34) & "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—˜™š›œŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
-    rngs(1) = "!" & Chr(34) & "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—˜™š›œŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
+    rngs(0) = " !" & Chr(34) & "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}" & _
+        "~€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—˜™š›œŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
+    rngs(1) = "!" & Chr(34) & "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}" & _
+        "~€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—˜™š›œŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
     rngs(2) = " !" & Chr(34) & "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
     rngs(3) = "!" & Chr(34) & "#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
     rngs(4) = "abcdefghijklmnopqrstuvwxyzœšÿàáâãäåæçèéêëìíîïğñòóôõöøùúûüışABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ŒŠŸÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖØÙÚÛÜİŞ"
@@ -85,7 +85,6 @@ Public Sub StringQuickSortAsc(ByRef arr() As String, ByVal leftIndex As Long, By
             arr(j) = tmp
             j = j - 1: i = i + 1
         End If
-        
     Loop Until i > j
         
     If leftIndex < j Then Call StringQuickSortAsc(arr(), leftIndex, j)
@@ -117,7 +116,6 @@ Public Sub StringQuickSortDesc(ByRef arr() As String, ByVal leftIndex As Long, B
             i = i + 1
             j = j - 1
         End If
-
     Wend
 
     If (leftIndex < j) Then StringQuickSortDesc arr, leftIndex, j
@@ -127,14 +125,14 @@ End Sub
 'Function to generate random password (not perfect, but works fine and generate really hard passwords to crack)
 'If no argument is passed then the function generates a random password composed of 8 char with at least 1 upper char, 1 lower char, 1 special char and 1 numeric
 'About args :
-'  - "taille" ==> exact length of the password you want
-'  - "lowC" ==> mininum number of small letters you want in your password
-'  - "upC" ==> minimum number of capital letters you want in your password
-'  - "num" ==> minimum number of numeric characters you want in your password
-'  - "spec" ==> minimum number of special characters you want in your password
+'- "taille" ==> exact length of the password you want
+'- "lowC" ==>   mininum number of small letters you want in your password
+'- "upC" ==>    minimum number of capital letters you want in your password
+'- "num" ==>    minimum number of numeric characters you want in your password
+'- "spec" ==>   minimum number of special characters you want in your password
 'Works with the "rndChar" function from "StringFunctions" and the "shuffleString" from "StringFunctions"
 Public Function RandomPass(Optional ByVal taille As Integer = 8, Optional ByVal lowC As Integer = 1, Optional ByVal upC As Integer = 1, _
-                            Optional ByVal num As Integer = 1, Optional ByVal spec As Integer = 1) As String
+        Optional ByVal num As Integer = 1, Optional ByVal spec As Integer = 1) As String
     Dim i As Long, minChar As Long
     
     RandomPass = ""
@@ -210,7 +208,6 @@ Public Function StringToArray(ByVal val As String) As Variant
     For i = 1 To Len(val)
         tmp(i - 1) = Mid(val, i, 1)
     Next i
-    
     StringToArray = tmp
 End Function
 
@@ -249,20 +246,12 @@ End Function
 
 'Function to check if string starts with other string (str starts with start) (no trim)
 Public Function StartWith(ByVal str As String, ByVal start As String, Optional ByVal withCase As Boolean = True) As Boolean
-    If (withCase) Then
-        StartWith = (Mid(str, 1, Len(start)) = start)
-    Else
-        StartWith = (Mid(UCase(str), 1, Len(start)) = UCase(start))
-    End If
+    StartWith = IIf(withCase, (Mid(str, 1, Len(start)) = start), (Mid(UCase(str), 1, Len(start)) = UCase(start)))
 End Function
 
 'Function to check if string ends with other string (str ends with ending) (no trim)
 Public Function EndWith(ByVal str As String, ByVal ending As String, Optional ByVal withCase As Boolean = True) As Boolean
-    If (withCase) Then
-        EndWith = (Mid(str, Len(str) - Len(ending) + 1) = ending)
-    Else
-        EndWith = (Mid(UCase(str), Len(str) - Len(ending)) = UCase(ending))
-    End If
+    EndWith = IIf(withCase, (Mid(str, Len(str) - Len(ending) + 1) = ending), (Mid(UCase(str), Len(str) - Len(ending)) = UCase(ending)))
 End Function
 
 'Function to add x tabulations at beginning of string
