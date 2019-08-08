@@ -1,5 +1,5 @@
-Attribute VB_Name = "intFunctions"
-Attribute VB_Description = " Pre-made functions and subs using Integer type\n"
+Attribute VB_Name = "IntFunctions"
+Attribute VB_Description = " Pre-made functions and subs using Integer type"
 Option Explicit
 
 'Function to calculate average value of integer array (!CARERUL! returns result as double)

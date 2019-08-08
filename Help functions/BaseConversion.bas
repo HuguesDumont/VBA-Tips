@@ -2,8 +2,12 @@ Attribute VB_Name = "BaseConversion"
 Attribute VB_Description = "Functions for conversion between bases"
 Option Explicit
 
-'Function to convert from any base to decimal
+'Convert from any base to decimal
 'Base limit is 35 (9 digits (0 is excluded) + 26 letters)
+'Parameters :
+'- srcValue : source value in the other base
+'- srvBase  : source base (number of units in source base)
+'Returns : the value (Long) in decimal base (base 10)
 Public Function BaseToDecimal(ByVal srcValue As String, ByVal srcBase As Integer) As Long
     Dim i As Long, digitValue As Long
     Dim strDigits As String
@@ -25,17 +29,20 @@ Public Function BaseToDecimal(ByVal srcValue As String, ByVal srcBase As Integer
 
 cannotConvert:
     If Err.number = 13 Then
-        MsgBox "Cannot convert to decimal. Please check that your value is a valid binary string.", vbCritical + vbOKOnly, "Invalid string"
+        Err.Raise 1013, "BaseToDecimal", "Cannot convert to decimal. Please check that your value is a valid number based string."
     ElseIf Err.number = 6 Then
-        MsgBox "Cannot convert to decimal. Value out of bound.", vbCritical + vbOKOnly, "Value out of bound"
+        Err.Raise 1016, "BaseToDecimal", "Cannot convert to decimal. Value out of bound."
     Else
-        MsgBox "Cannot convert to decimal due to an unknown error.", vbCritical + vbOKOnly, "Unknown error"
+        Err.Raise 1019, "BaseToDecimal", "Cannot convert to decimal due to an unknown error."
     End If
 End Function
 
-'Function to convert binary string to decimal number
+'Convert from any binary string to decimal
 'Need the Microsoft VBScript Regular Expressions 5.5 reference to test if string is a binary string
-'Return -1 if error occurred
+'Base limit is 35 (9 digits (0 is excluded) + 26 letters)
+'Parameters :
+'- strBin   : the binary string to convert
+'Returns : the value (Long) in decimal base (base 10) or -1 if cannot convert
 Public Function BinaryToDecimal(ByVal strBin As String) As Long
     Dim x As Integer
     Dim reg As New VBScript_RegExp_55.RegExp
@@ -57,35 +64,44 @@ Public Function BinaryToDecimal(ByVal strBin As String) As Long
 
 cannotConvert:
     If Err.number = 13 Then
-        MsgBox "Cannot convert to decimal. Please check that your value is a valid binary string.", vbCritical + vbOKOnly, "Invalid string"
+        Err.Raise 1013, "BinaryToDecimal", "Cannot convert to decimal. Please check that your value is a valid binary string."
     ElseIf Err.number = 6 Then
-        MsgBox "Cannot convert to decimal. Value out of bound.", vbCritical + vbOKOnly, "Value out of bound"
+        Err.Raise 1016, "BinaryToDecimal", "Cannot convert to decimal. Value out of bound."
     Else
-        MsgBox "Cannot convert to decimal due to an unknown error.", vbCritical + vbOKOnly, "Unknown error"
+        Err.Raise 1019, "BinaryToDecimal", "Cannot convert to decimal due to an unknown error."
     End If
     BinaryToDecimal = -1
 End Function
 
-'Function to convert from any base to any other base
+'Convert from any base to any other base
 'Using decimal as temporary conversion
 'Using baseToDecimal and decimalToBase functions
+'Parameters :
+'- value    : the value in its source base
+'- srcBase  : the source base
+'- destBase : the destination base
+'Returns : the value (string) in destination base
 Public Function ConvertBase(ByVal value As String, ByVal srcBase As Integer, ByVal destBase As Integer) As String
-    ConvertBase = DecimalToBase(BaseToDecimal(value, srcBase), destBase)
+    ConvertBase = DecimalToBase(val(BaseToDecimal(value, srcBase)), destBase)
 End Function
 
-'Function to convert a decimal value to any other base
+'Convert a decimal value to any other base
 'Base limit is 35 (9 digits (0 is excluded) + 26 letters)
-Public Function DecimalToBase(ByVal srcValue As String, ByVal destBase As Integer) As String
+'Parameters :
+'- value    : the value in decimal base
+'- destBase : the destination base
+'Returns : the value (string) in destination base
+Public Function DecimalToBase(ByVal srcValue As Long, ByVal destBase As Integer) As String
     Dim valueRest As Long, toDivide As Long
     Dim charRest As String
 
     On Error GoTo cannotConvert
 
-    toDivide = val(srcValue)
+    toDivide = srcValue
     DecimalToBase = ""
 
     If destBase < 2 Or destBase > 36 Then
-        MsgBox "Cannot convert to base over 36 or below 2.", vbOKOnly + vbExclamation, "Base error"
+        Err.Raise 1010, "DecimalToBase", "Cannot convert to base over 36 or below 2."
     End If
 
     While toDivide > 0
@@ -97,30 +113,33 @@ Public Function DecimalToBase(ByVal srcValue As String, ByVal destBase As Intege
     Exit Function
 
 cannotConvert:
+
     If Err.number = 13 Then
-        MsgBox "Cannot convert to decimal. Please check that your value is a valid binary string.", vbCritical + vbOKOnly, "Invalid string"
+        Err.Raise 1013, "DecimalToBase", "Cannot convert to decimal. Please check that your value is a valid number."
     ElseIf Err.number = 6 Then
-        MsgBox "Cannot convert to decimal. Value out of bound.", vbCritical + vbOKOnly, "Value out of bound"
+        Err.Raise 1016, "DecimalToBase", "Cannot convert to base" & destBase & ". Value out of bound."
     Else
-        MsgBox "Cannot convert to decimal due to an unknown error.", vbCritical + vbOKOnly, "Unknown error"
+        Err.Raise 1019, "DecimalToBase", "Cannot convert to base" & destBase & " due to an unknown error."
     End If
 End Function
 
-'Function to convert positive long number to binary string
-'Return empty string if error occurred
-Public Function DecimalToBinary(ByVal strDec As Long) As String
+'Convert number to binary string
+'Parameters :
+'- decValue : source number in decimal base
+'Returns : a string in binary base or empty string if error occurred
+Public Function DecimalToBinary(ByVal decValue As Long) As String
     Dim isNeg As Boolean
 
     On Error GoTo cannotConvert
 
-    isNeg = (strDec < 0)
+    isNeg = (decValue < 0)
     If isNeg Then
-        strDec = strDec * -1
+        decValue = decValue * -1
     End If
 
     While strDec <> 0
-        DecimalToBinary = Format(strDec - 2 * Int(strDec / 2)) & DecimalToBinary
-        strDec = Int(strDec / 2)
+        DecimalToBinary = Format(decValue - 2 * Int(decValue / 2)) & DecimalToBinary
+        decValue = Int(decValue / 2)
     Wend
 
     If isNeg Then
@@ -130,9 +149,9 @@ Public Function DecimalToBinary(ByVal strDec As Long) As String
 
 cannotConvert:
     If Err.number = 6 Then
-        MsgBox "Cannot convert to binary. Integer out of bound.", vbCritical + vbOKOnly, "Integer out of bound"
+        Err.Raise 1016, "DecimalToBinary", "Cannot convert to binary. Source value out of bound."
     Else
-        MsgBox "Cannot convert to binary due to an unknown error.", vbCritical + vbOKOnly, "Unknown error"
+        Err.Raise 1019, "DecimalToBinary", "Cannot convert to binary due to an unknown error."
     End If
     DecimalToBinary = ""
 End Function

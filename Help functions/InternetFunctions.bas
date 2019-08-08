@@ -1,4 +1,4 @@
-Attribute VB_Name = "internetFunctions"
+Attribute VB_Name = "InternetFunctions"
 Option Explicit
 
 'Sub to navigate to web page in IE (given an url and if the page has to be shown or not)

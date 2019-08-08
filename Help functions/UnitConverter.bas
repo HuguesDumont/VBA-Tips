@@ -2,30 +2,116 @@ Attribute VB_Name = "UnitConverter"
 Attribute VB_Description = "Divers functions like conversion between roman and arabic numerals or temperature conversion"
 Option Explicit
 
-'Function to convert acceleration between units.
+'Function to convert between absorbed dose units
+'To chose source and destination units (default destination = 1 [gray])
+'1  : Gy (gray)
+'2  : kGy (kilogray)
+'3  : hGy (hectogray)
+'4  : daGy (decagray)
+'5  : dGy (decigray)
+'6  : cGy (centigray)
+'7  : mGy (milligray)
+'8  : µGy (microgray)
+'9  : nGy (nanogray)
+'10 : krd (kilorad)
+'11 : hrd (hectorad)
+'12 : dard (decarad)
+'13 : rd (rad)
+'14 : drd (decirad)
+'15 : crd (centirad)
+'16 : mrd (millirad)
+'17 : µrd (microrad)
+'18 : nrd (nanorad)
+'19 : kJ/kg (kilojoule/kilogram)
+'20 : hJ/kg (hectojoule/kilogram)
+'21 : daJ/kg (decajoule/kilogram)
+'22 : J/kg  (joule/kilogram)
+'23 : dJ/kg (decijoule/kilogram)
+'24 : cJ/kg (centijoule/kilogram)
+'25 : mJ/kg (millijoule/kilogram)
+'26 : µJ/kg (microjoule/kilogram)
+'27 : nJ/kg (nanojoule/kilogram)
+Public Function AbsorbedDoseConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 27) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 27) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        AbsorbedDoseConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2, 19
+                AbsorbedDoseConverter = val * 0.001
+            Case 10
+                AbsorbedDoseConverter = val * 0.1
+            Case 5, 12, 23
+                AbsorbedDoseConverter = val * 10
+            Case 3, 4, 6, 7, 13, 14, 16, 20, 21, 24, 25
+                AbsorbedDoseConverter = AbsorbedDoseConverter(val, src, dest - 1) * 10
+            Case 26
+                AbsorbedDoseConverter = val * 1000000
+            Case 8, 9, 17, 18, 27
+                AbsorbedDoseConverter = AbsorbedDoseConverter(val, src, dest - 1) * 1000
+            Case 11, 22
+                AbsorbedDoseConverter = val
+            Case 15
+                AbsorbedDoseConverter = val * 10000
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2, 19
+                AbsorbedDoseConverter = val * 1000
+            Case 3, 4, 6, 7, 13, 14, 16, 20, 21, 24, 25
+                AbsorbedDoseConverter = AbsorbedDoseConverter(val, src - 1, dest) * 0.1
+            Case 10
+                AbsorbedDoseConverter = val * 10
+            Case 5, 12, 23
+                AbsorbedDoseConverter = val * 0.1
+            Case 26
+                AbsorbedDoseConverter = val * 0.000001
+            Case 8, 9, 17, 18, 27
+                AbsorbedDoseConverter = AbsorbedDoseConverter(val, src - 1, dest) * 0.001
+            Case 11, 22
+                AbsorbedDoseConverter = val
+            Case 15
+                AbsorbedDoseConverter = val * 0.0001
+        End Select
+    Else
+        tmp = AbsorbedDoseConverter(val, src, 1)
+        AbsorbedDoseConverter = AbsorbedDoseConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between acceleration units.
 'To chose source and destination units (default destination is m/s²):
-'1 : M/s²
-'2 : Km/h²
-'3 : Km/min²
-'4 : Km/s²
-'5 : M/h²
-'6 : M/min²
-'7 : Mm/h²
-'8 : Mm/min²
-'9 : Mm/s²
-'10 : Miles/h²
-'11 : Miles/min²
-'12 : Miles/s²
-'13 : Ft/h²
-'14 : Ft/min²
-'15 : Ft/s²
-'16 : In/h²
-'17 : In/m²
-'18 : In/s²
-'19 : G
-'20 : G(moon)
-'21 : Gal
-Public Function AccelerationConversion(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+'1  : m/s² (meter per square seconds)
+'2  : km/h² (kilometer per square hour)
+'3  : km/min² (kilometer per square minute)
+'4  : km/s² (kilometer per square second)
+'5  : m/h² (meter per square hour)
+'6  : m/min² (meter per square minute)
+'7  : mm/h² (millimeter per square hour)
+'8  : mm/min² (millimeter per square minute)
+'9  : mm/s² (millimeter per square second)
+'10 : miles/h² (miles per square hour)
+'11 : miles/min² (miles per square minute)
+'12 : miles/s² (miles per square second)
+'13 : ft/h² (foot per square hour)
+'14 : ft/min² (foot per square minute)
+'15 : ft/s² (foot per square second)
+'16 : in/h² (inch per square hour)
+'17 : in/m² (inch per square minute)
+'18 : in/s² (inch per square second)
+'19 : g (gravitation (earth))
+'20 : g(moon) (gravitation (moon))
+'21 : Gal (Gal)
+Public Function AccelerationConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
     Dim tmp As Double
 
     If (dest < 1 Or dest > 21) Then
@@ -37,108 +123,108 @@ Public Function AccelerationConversion(ByVal val As Double, ByVal src As Integer
     End If
 
     If (src = dest Or val = 0) Then
-        AccelerationConversion = val
+        AccelerationConverter = val
     ElseIf (src = 1) Then
         Select Case dest
             Case 2
-                AccelerationConversion = val * 12960
+                AccelerationConverter = val * 12960
             Case 3
-                AccelerationConversion = val * 3.6
+                AccelerationConverter = val * 3.6
             Case 4
-                AccelerationConversion = val * 0.001
+                AccelerationConverter = val * 0.001
             Case 5
-                AccelerationConversion = val * 12960000
+                AccelerationConverter = val * 12960000
             Case 6
-                AccelerationConversion = val * 3600
+                AccelerationConverter = val * 3600
             Case 7
-                AccelerationConversion = val * 12960000000#
+                AccelerationConverter = val * 12960000000#
             Case 8
-                AccelerationConversion = val * 3600000
+                AccelerationConverter = val * 3600000
             Case 9
-                AccelerationConversion = val * 1000
+                AccelerationConverter = val * 1000
             Case 10
-                AccelerationConversion = val * 8052.9706513958
+                AccelerationConverter = val * 8052.9706513958
             Case 11
-                AccelerationConversion = val * 2.2369362920544
+                AccelerationConverter = val * 2.2369362920544
             Case 12
-                AccelerationConversion = val * 6.2137119223733E-04
+                AccelerationConverter = val * 6.2137119223733E-04
             Case 13
-                AccelerationConversion = val * 42519685.03937
+                AccelerationConverter = val * 42519685.03937
             Case 14
-                AccelerationConversion = val * 11811.023622047
+                AccelerationConverter = val * 11811.023622047
             Case 15
-                AccelerationConversion = val * 3.2808398950131
+                AccelerationConverter = val * 3.2808398950131
             Case 16
-                AccelerationConversion = val * 510236220.47244
+                AccelerationConverter = val * 510236220.47244
             Case 17
-                AccelerationConversion = val * 141732.28346457
+                AccelerationConverter = val * 141732.28346457
             Case 18
-                AccelerationConversion = val * 39.370078740157
+                AccelerationConverter = val * 39.370078740157
             Case 19
-                AccelerationConversion = val * 0.10193679918451
+                AccelerationConverter = val * 0.10193679918451
             Case 20
-                AccelerationConversion = val * 0.61349693251534
+                AccelerationConverter = val * 0.61349693251534
             Case 21
-                AccelerationConversion = val * 100
+                AccelerationConverter = val * 100
         End Select
     ElseIf (dest = 1) Then
         Select Case src
             Case 2
-                AccelerationConversion = val / 12960
+                AccelerationConverter = val / 12960
             Case 3
-                AccelerationConversion = val / 3.6
+                AccelerationConverter = val / 3.6
             Case 4
-                AccelerationConversion = val / 0.001
+                AccelerationConverter = val / 0.001
             Case 5
-                AccelerationConversion = val / 12960000
+                AccelerationConverter = val / 12960000
             Case 6
-                AccelerationConversion = val / 3600
+                AccelerationConverter = val / 3600
             Case 7
-                AccelerationConversion = val / 12960000000#
+                AccelerationConverter = val / 12960000000#
             Case 8
-                AccelerationConversion = val / 3600000
+                AccelerationConverter = val / 3600000
             Case 9
-                AccelerationConversion = val / 1000
+                AccelerationConverter = val / 1000
             Case 10
-                AccelerationConversion = val / 8052.9706513958
+                AccelerationConverter = val / 8052.9706513958
             Case 11
-                AccelerationConversion = val / 2.2369362920544
+                AccelerationConverter = val / 2.2369362920544
             Case 12
-                AccelerationConversion = val / 6.2137119223733E-04
+                AccelerationConverter = val / 6.2137119223733E-04
             Case 13
-                AccelerationConversion = val / 42519685.03937
+                AccelerationConverter = val / 42519685.03937
             Case 14
-                AccelerationConversion = val / 11811.023622047
+                AccelerationConverter = val / 11811.023622047
             Case 15
-                AccelerationConversion = val / 3.2808398950131
+                AccelerationConverter = val / 3.2808398950131
             Case 16
-                AccelerationConversion = val / 510236220.47244
+                AccelerationConverter = val / 510236220.47244
             Case 17
-                AccelerationConversion = val / 141732.28346457
+                AccelerationConverter = val / 141732.28346457
             Case 18
-                AccelerationConversion = val / 39.370078740157
+                AccelerationConverter = val / 39.370078740157
             Case 19
-                AccelerationConversion = val / 0.10193679918451
+                AccelerationConverter = val / 0.10193679918451
             Case 20
-                AccelerationConversion = val / 0.61349693251534
+                AccelerationConverter = val / 0.61349693251534
             Case 21
-                AccelerationConversion = val / 100
+                AccelerationConverter = val / 100
         End Select
     Else
-        tmp = AccelerationConversion(val, src, 1)
-        AccelerationConversion = AccelerationConversion(tmp, 1, dest)
+        tmp = AccelerationConverter(val, src, 1)
+        AccelerationConverter = AccelerationConverter(tmp, 1, dest)
     End If
 End Function
 
 'Function to convert between angle units
 'To chose source and destination units (default destination = 1 [degre])
-'1 : °   (Degre)
-'2 : Rad (radian)
-'3 : '   (Arc minute)
-'4 : "   (Arc second)
-'5 : Gon (grade)
-'6 : Mil (angular mil)
-Public Function AngleConversion(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+'1 : °   (degree)
+'2 : rad (radian)
+'3 : '   (minute of arc)
+'4 : "   (second of arc)
+'5 : gon ((g) grade)
+'6 : mil (NATO) (angular mil)
+Public Function AngleConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
     Dim tmp As Double
 
     If (dest < 1 Or dest > 6) Then
@@ -150,36 +236,36 @@ Public Function AngleConversion(ByVal val As Double, ByVal src As Integer, Optio
     End If
 
     If (src = dest Or val = 0) Then
-        AngleConversion = val
+        AngleConverter = val
     ElseIf (src = 1) Then
         Select Case dest
             Case 2
-                AngleConversion = val * ((4 * Atn(1)) / 180)
+                AngleConverter = val * ((4 * Atn(1)) / 180)
             Case 3
-                AngleConversion = val * 60
+                AngleConverter = val * 60
             Case 4
-                AngleConversion = val * 3600
+                AngleConverter = val * 3600
             Case 5
-                AngleConversion = val * 200 / 180
+                AngleConverter = val * 200 / 180
             Case 6
-                AngleConversion = val * (1000 * (4 * Atn(1))) / 180
+                AngleConverter = val * (1000 * (4 * Atn(1))) / 180
         End Select
     ElseIf (dest = 1) Then
         Select Case src
             Case 2
-                AngleConversion = val * (180 / (4 * Atn(1)))
+                AngleConverter = val * (180 / (4 * Atn(1)))
             Case 3
-                AngleConversion = val / 60
+                AngleConverter = val / 60
             Case 4
-                AngleConversion = val / 3600
+                AngleConverter = val / 3600
             Case 5
-                AngleConversion = val * 180 / 200
+                AngleConverter = val * 180 / 200
             Case 6
-                AngleConversion = val * (180 / (1000 * (4 * Atn(1))))
+                AngleConverter = val * (180 / (1000 * (4 * Atn(1))))
         End Select
     Else
-        tmp = AngleConversion(val, src, 1)
-        AngleConversion = AngleConversion(tmp, 1, dest)
+        tmp = AngleConverter(val, src, 1)
+        AngleConverter = AngleConverter(tmp, 1, dest)
     End If
 End Function
 
@@ -210,31 +296,131 @@ Public Function ArabicToRomans(ByVal arabic As Long) As String
     End If
 End Function
 
+'Function to convert between area units
+'To chose source and destination units (default destination = 1 [square meter])
+'1  : m2 (square meter)
+'2  : km2 (square kilometer)
+'3  : hm2 (square hectometer)
+'4  : dam2 (square decameter)
+'5  : dm2 (square decimeter)
+'6  : cm2 (square centimeter)
+'7  : mm2 (square millimeter)
+'8  : ha (hectare)
+'9  : a (are)
+'10 : ca (centiare)
+'11 : sq mi (square mile)
+'12 : ac (acre)
+'13 : rood (ro)
+'14 : sq yd (square yard)
+'15 : sq ft (square foot)
+'16 : sq in (square inch)
+'17 : lí (lí)
+'18 : fen (fen)
+'19 : mu (mu)
+'20 : shí (shí)
+'21 : qing (qing)
+Public Function AreaConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 21) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 21) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        AreaConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                AreaConverter = val * 0.000001
+            Case 3, 4, 6, 7, 9
+                AreaConverter = AreaConverter(val, src, dest - 1) * 100
+            Case 5
+                AreaConverter = val * 100
+            Case 8
+                AreaConverter = val * 0.0001
+            Case 10
+                AreaConverter = val
+            Case 11
+                AreaConverter = val / 2589988.110336
+            Case 12
+                AreaConverter = val / 4046.8564224
+            Case 13
+                AreaConverter = val / 1011.7141056
+            Case 14
+                AreaConverter = val / 0.83612736
+            Case 15
+                AreaConverter = val / 0.09290304
+            Case 16
+                AreaConverter = val / 0.00064516
+            Case 17
+                AreaConverter = val * 0.15
+            Case 18 To 21
+                AreaConverter = AreaConverter(val, src, dest - 1) * 0.1
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                AreaConverter = val * 1000000
+            Case 3, 4, 6, 7, 9
+                AreaConverter = AreaConverter(val, src, dest - 1) * 0.01
+            Case 5
+                AreaConverter = val * 0.01
+            Case 8
+                AreaConverter = val * 10000
+            Case 10
+                AreaConverter = val
+            Case 11
+                AreaConverter = val * 2589988.110336
+            Case 12
+                AreaConverter = val * 4046.8564224
+            Case 13
+                AreaConverter = val * 1011.7141056
+            Case 14
+                AreaConverter = val * 0.83612736
+            Case 15
+                AreaConverter = val * 0.09290304
+            Case 16
+                AreaConverter = val * 0.00064516
+            Case 17
+                AreaConverter = val / 0.15
+            Case 18 To 21
+                AreaConverter = AreaConverter(val, src - 1, dest) * 10
+        End Select
+    Else
+        tmp = AreaConverter(val, src, 1)
+        AreaConverter = AreaConverter(tmp, 1, dest)
+    End If
+End Function
+
 'Function to convert between bandwith units
 'To chose source and destination units (default destination = 1 [bytes])
-'1 : B/s (bytes per seconde)
-'2 : Bps (bits per seconde)
-'3 : KB/s (kilobytes per seconde)
-'4 : MB/s (mégabytes per seconde)
-'5 : GB/s (gigabytes per seconde)
-'6 : TB/s (térabytes per seconde)
-'7 : PB/s (petabytes per seconde)
-'8 : KiB/s (kibibytes per seconde)
-'9 : MiB/s (mebibytes per seconde)
-'10 : GiB/s (gibibytes per seconde)
-'11 : TiB/s (tebibytes per seconde)
-'12 : PiB/s (pebibytes per seconde)
-'13 : Kbps (kilobits per seconde)
-'14 : Mbps (mégabits per seconde)
-'15 : Gbps (gigabits per seconde)
-'16 : Tbps (térabits per seconde)
-'17 : Pbps (petabits per seconde)
-'18 : Kibps (kibibits per seconde)
-'19 : Mibps (mebibits per seconde)
-'20 : Gibps (gibibits per seconde)
-'21 : Tibps (tebibits per seconde)
-'22 : Pibps (pebibits per seconde)
-Public Function BandwithConversion(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+'1  : B/s (byte per seconde)
+'2  : Bps (bit per seconde)
+'3  : KB/s (kilobyte per seconde)
+'4  : MB/s (megabyte per seconde)
+'5  : GB/s (gigabyte per seconde)
+'6  : TB/s (terabyte per seconde)
+'7  : PB/s (petabyte per seconde)
+'8  : KiB/s (kibibyte per seconde)
+'9  : MiB/s (mebibyte per seconde)
+'10 : GiB/s (gibibyte per seconde)
+'11 : TiB/s (tebibyte per seconde)
+'12 : PiB/s (pebibyte per seconde)
+'13 : Kbps (kilobit per seconde)
+'14 : Mbps (megabit per seconde)
+'15 : Gbps (gigabit per seconde)
+'16 : Tbps (terabit per seconde)
+'17 : Pbps (petabit per seconde)
+'18 : Kibps (kibibit per seconde)
+'19 : Mibps (mebibit per seconde)
+'20 : Gibps (gibibit per seconde)
+'21 : Tibps (tebibit per seconde)
+'22 : Pibps (pebibit per seconde)
+Public Function BandwithConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
     Dim tmp As Double
 
     If (dest < 1 Or dest > 22) Then
@@ -246,183 +432,184 @@ Public Function BandwithConversion(ByVal val As Double, ByVal src As Integer, Op
     End If
 
     If (src = dest Or val = 0) Then
-        BandwithConversion = val
+        BandwithConverter = val
     ElseIf (src = 1) Then
         Select Case dest
             Case 2
-                BandwithConversion = val * 8
+                BandwithConverter = val * 8
             Case 3
-                BandwithConversion = val * 0.001
-            Case 4
-                BandwithConversion = val * 0.000001
-            Case 5
-                BandwithConversion = val * 0.000000001
-            Case 6
-                BandwithConversion = val * 0.000000000001
-            Case 7
-                BandwithConversion = val * 0.000000000000001
+                BandwithConverter = val * 0.001
+            Case 4 To 7, 14 To 17
+                BandwithConverter = BandwithConverter(val, src, dest - 1) / 1000
             Case 8
-                BandwithConversion = val * 0.0009765625
-            Case 9
-                BandwithConversion = BandwithConversion(val, src, 8) * 0.0009765625
-            Case 10
-                BandwithConversion = BandwithConversion(val, src, 9) * 0.0009765625
-            Case 11
-                BandwithConversion = BandwithConversion(val, src, 10) * 0.0009765625
-            Case 12
-                BandwithConversion = BandwithConversion(val, src, 11) * 0.0009765625
+                BandwithConverter = val / 1024
+            Case 9 To 12, 19 To 22
+                BandwithConverter = BandwithConverter(val, src, dest - 1) / 1024
             Case 13
-                BandwithConversion = val * 0.008
-            Case 14
-                BandwithConversion = val * 0.000008
-            Case 15
-                BandwithConversion = val * 0.000000008
-            Case 16
-                BandwithConversion = val * 0.000000000008
-            Case 17
-                BandwithConversion = val * 0.000000000000008
+                BandwithConverter = val * 0.008
             Case 18
-                BandwithConversion = val * 0.0078125
-            Case 19
-                BandwithConversion = BandwithConversion(val, src, 18) * 0.0009765625
-            Case 20
-                BandwithConversion = BandwithConversion(val, src, 19) * 0.0009765625
-            Case 21
-                BandwithConversion = BandwithConversion(val, src, 20) * 0.0009765625
-            Case 22
-                BandwithConversion = BandwithConversion(val, src, 21) * 0.0009765625
+                BandwithConverter = val / 128
         End Select
     ElseIf (dest = 1) Then
         Select Case src
             Case 2
-                BandwithConversion = val * 0.125
+                BandwithConverter = val * 0.125
             Case 3
-                BandwithConversion = val * 1000
-            Case 4
-                BandwithConversion = val * 1000000
-            Case 5
-                BandwithConversion = val * 1000000000
-            Case 6
-                BandwithConversion = val * 1000000000000#
-            Case 7
-                BandwithConversion = val * 1E+15
+                BandwithConverter = val * 1000
+            Case 4 To 7, 14 To 17
+                BandwithConverter = BandwithConverter(val, src - 1, dest) * 1000
             Case 8
-                BandwithConversion = val * 1024
-            Case 9
-                BandwithConversion = BandwithConversion(val, 8, dest) * 1024
-            Case 10
-                BandwithConversion = BandwithConversion(val, 9, dest) * 1024
-            Case 11
-                BandwithConversion = BandwithConversion(val, 10, dest) * 1024
-            Case 12
-                BandwithConversion = BandwithConversion(val, 11, dest) * 1024
+                BandwithConverter = val * 1024
+            Case 9 To 12, 19 To 22
+                BandwithConverter = BandwithConverter(val, src - 1, dest) * 1024
             Case 13
-                BandwithConversion = val * 125
-            Case 14
-                BandwithConversion = val * 125000
-            Case 15
-                BandwithConversion = val * 125000000#
-            Case 16
-                BandwithConversion = val * 125000000000#
-            Case 17
-                BandwithConversion = val * 125000000000000#
+                BandwithConverter = val * 125
             Case 18
-                BandwithConversion = val * 128
-            Case 19
-                BandwithConversion = BandwithConversion(val, 18, dest) * 1024
-            Case 20
-                BandwithConversion = BandwithConversion(val, 19, dest) * 1024
-            Case 21
-                BandwithConversion = BandwithConversion(val, 20, dest) * 1024
-            Case 22
-                BandwithConversion = BandwithConversion(val, 21, dest) * 1024
+                BandwithConverter = val * 128
         End Select
     Else
-        tmp = BandwithConversion(val, src, 1)
-        BandwithConversion = BandwithConversion(tmp, 1, dest)
+        tmp = BandwithConverter(val, src, 1)
+        BandwithConverter = BandwithConverter(tmp, 1, dest)
     End If
 End Function
 
-'Function to convert distances between units.
+'Function to convert between density units
+'To chose source and destination units (default destination = 1 [kilogram per cubic meter])
+'1  : kg/m3 (kilogram per cubic meter)
+'2  : t/m3 (ton per cubic meter)
+'3  : kg/dm3 (kilogram per cubic decimeter)
+'4  : g/cm3 (gram per cubic centimeter
+'5  : kg/L (kilogram per liter)
+'6  : g /mL (gram per milliliter)
+'7  : lb/in3 (pound per cubic inch)
+'8  : lb/ft3 (pound per cubic feet)
+'9  : lb/gal (imperial) (pound per gallon (imperial))
+'10 : lb/gal (US) (pound per gallon (US))
+Public Function DensityConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 10) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 10) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        DensityConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2 To 6
+                DensityConverter = val * 0.001
+            Case 7
+                DensityConverter = val / 27679.9
+            Case 8
+                DensityConverter = val / 16.01846
+            Case 9
+                DensityConverter = val / 99.77637
+            Case 10
+                DensityConverter = val / 119.8264
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2 To 6
+                DensityConverter = val * 1000
+            Case 7
+                DensityConverter = val * 27679.9
+            Case 8
+                DensityConverter = val * 16.01846
+            Case 9
+                DensityConverter = val * 99.77637
+            Case 10
+                DensityConverter = val * 119.8264
+        End Select
+    Else
+        tmp = DensityConverter(val, src, 1)
+        DensityConverter = DensityConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between distance units.
 'To chose source and destination units (default destination is meter [m]):
-'1 Meter m
-'2 Kilometer km
-'3 Centimeter cm
-'4 Millimeter Mm
-'5 Micrometer um
-'6 Micron u
-'7 Nanometer nm
-'8 Picometer Pm
-'9 Decimeter dm
-'10 Nautical league(International)
-'11 Nautical mile(International)
-'12 Inch in
-'13 Yard yd
-'14 Foot ft
-'15 League lea
-'16 Mile mi
-'17 Light year ly
-'18 Exameter Em
-'19 Petameter Pm
-'20 Terameter Tm
-'21 Gigameter Gm
-'22 Megameter Mm
-'23 Hectometer hm
-'24 Dekameter dam
-'25 Femtometer fm
-'26 Attometer am
-'27 Parsec pc
-'28 Astronomical unit AU
-'29 Ell
-'30 Mil
-'31 Microinch
-'32 Nautical league(UK)
-'33 Nautical mile(UK)
-'34 Mile (roman)
-'35 Furlong fur
-'36 Chain ch
-'37 Rope
-'38 Rod rd
-'39 Perch
-'40 Pole
-'41 Fathom fath
-'42 Link li
-'43 Cubit (UK)
-'44 Hand
-'45 Span (cloth)
-'46 Finger (cloth)
-'47 Nail (cloth)
-'48 Reed
-'49 Ken
-'50 Caliber cl
-'51 Centiinch cin
-'52 Pica
-'53 Point
-'54 Twip
-'55 Barleycorn
-'56 Inch (US Survey)
-'57 League (statute) lea (US)
-'58 Mile (statute) mi (US)
-'59 Foot (US Survey) ft (US)
-'60 Link (US Survey) li (US)
-'61 Aln
-'62 Famn
-'63 Angstrom a
-'64 A.u. of length a.u
-'65 X-unit X
-'66 Fermi F
-'67 Arpent
-'68 Roman actus
-'69 Vara de tarea
-'70 Vara conuguera
-'71 Vara castellana
-'72 Long reed
-'73 Long cubit
-'74 Li (Chinese)
-'75 Zhang (Chinese)
-'76 Chi (Chinese)
-'77 Cun (Chinese)
-Public Function DistanceConversion(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+'1  : m (meter)
+'2  : km (kilometer)
+'3  : cm (centimeter)
+'4  : mm (millimeter)
+'5  : µm (micrometer)
+'6  : µ (micron)
+'7  : nm (nanometer)
+'8  : pm (picometer)
+'9  : dm (decimeter)
+'10 : nautical league (International)
+'11 : nautical mile (International)
+'12 : in (inch)
+'13 : yd (yard)
+'14 : ft (foot)
+'15 : lea (league)
+'16 : mi (mile)
+'17 : ly (light year)
+'18 : Em (Exameter)
+'19 : Pm (Petameter)
+'20 : Tm (Terameter)
+'21 : Gm (Gigameter)
+'22 : Mm (Megameter)
+'23 : hm (hectometer)
+'24 : dam (decameter)
+'25 : fm (femtometer)
+'26 : am (Attometer)
+'27 : pc (parsec)
+'28 : AU (astronomical unit)
+'29 : ell
+'30 : mil
+'31 : microinch
+'32 : nautical league (UK)
+'33 : nautical mile (UK)
+'34 : mile (roman)
+'35 : fur (furlong)
+'36 : ch (chain)
+'37 : rope
+'38 : rd (rod)
+'39 : perch
+'40 : pole
+'41 : fath (fathom)
+'42 : li (link)
+'43 : cubit (UK)
+'44 : hand
+'45 : span (cloth)
+'46 : finger (cloth)
+'47 : nail (cloth)
+'48 : reed
+'49 : ken
+'50 : cl (caliber)
+'51 : cin (centiinch)
+'52 : pica
+'53 : point
+'54 : twip
+'55 : barleycorn
+'56 : inch (US Survey)
+'57 : lea (US) (league (statute))
+'58 : mi (US) (mile (statute))
+'59 : ft (US) (foot (US Survey))
+'60 : li (Us) (link (US Survey))
+'61 : Aln
+'62 : Famn
+'63 : a (angstrom)
+'64 : a.u (a.u. of length)
+'65 : X-unit X
+'66 : F (fermi)
+'67 : arpent
+'68 : roman actus
+'69 : vara de tarea
+'70 : vara conuguera
+'71 : vara castellana
+'72 : long reed
+'73 : long cubit
+'74 : li (Chinese)
+'75 : zhang (Chinese)
+'76 : chi (Chinese)
+'77 : cun (Chinese)
+Public Function DistanceConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
     Dim tmp As Double
 
     If (dest < 1 Or dest > 77) Then
@@ -434,320 +621,268 @@ Public Function DistanceConversion(ByVal val As Double, ByVal src As Integer, Op
     End If
 
     If (dest = src Or val = 0) Then
-        DistanceConversion = dest
+        DistanceConverter = dest
     ElseIf (src = 1) Then
         Select Case dest
             Case 2
-                DistanceConversion = val * 0.001
+                DistanceConverter = val * 0.001
             Case 3
-                DistanceConversion = val * 100
-            Case 4
-                DistanceConversion = val * 1000
-            Case 5
-                DistanceConversion = val * 1000000
-            Case 6
-                DistanceConversion = val * 1000000
-            Case 7
-                DistanceConversion = val * 1000000000#
-            Case 8
-                DistanceConversion = val * 1000000000000#
+                DistanceConverter = val * 100
+            Case 4, 24
+                DistanceConverter = DistanceConverter(val, src, dest - 1) * 10
+            Case 5, 6
+                DistanceConverter = val * 1000000
+            Case 7, 8, 26
+                DistanceConverter = DistanceConverter(val, src, dest - 1) * 1000
             Case 9
-                DistanceConversion = val * 10
+                DistanceConverter = val * 10
             Case 10
-                DistanceConversion = val * 0.0001799856
+                DistanceConverter = val * 0.0001799856
             Case 11
-                DistanceConversion = val * 0.0005399568
+                DistanceConverter = val * 0.0005399568
             Case 12
-                DistanceConversion = val * 39.370078740157
+                DistanceConverter = val * 39.370078740157
             Case 13
-                DistanceConversion = val * 1.093613
+                DistanceConverter = val * 1.093613
             Case 14
-                DistanceConversion = val * 3.280839
+                DistanceConverter = val * 3.280839
             Case 15
-                DistanceConversion = val * 2.0712330174427E-04
+                DistanceConverter = val * 2.0712330174427E-04
             Case 16
-                DistanceConversion = val * 0.0006213711
+                DistanceConverter = val * 0.0006213711
             Case 17
-                DistanceConversion = val * 1.056970721911E-16
-            Case 18
-                DistanceConversion = val * 1E-18
-            Case 19
-                DistanceConversion = val * 0.000000000000001
-            Case 20
-                DistanceConversion = val * 0.000000000001
-            Case 21
-                DistanceConversion = val * 0.000000001
-            Case 22
-                DistanceConversion = val * 0.000001
+                DistanceConverter = val * 1.056970721911E-16
+            Case 18 To 22
+                DistanceConverter = DistanceConverter(val, src, dest + 1) / 1000
             Case 23
-                DistanceConversion = val * 0.01
-            Case 24
-                DistanceConversion = val * 0.1
+                DistanceConverter = val * 0.01
             Case 25
-                DistanceConversion = val * 1E+15
-            Case 26
-                DistanceConversion = val * 1E+18
+                DistanceConverter = val * 1E+15
             Case 27
-                DistanceConversion = val * 3.2407792899604E-17
+                DistanceConverter = val * 3.2407792899604E-17
             Case 28
-                DistanceConversion = val * 6.6845871222684E-12
+                DistanceConverter = val * 6.6845871222684E-12
             Case 29
-                DistanceConversion = val * 0.874891
+                DistanceConverter = val * 0.874891
             Case 30
-                DistanceConversion = val * 39370.07874
+                DistanceConverter = val * 39370.07874
             Case 31
-                DistanceConversion = val * 39370078.739999
+                DistanceConverter = val * 39370078.739999
             Case 32
-                DistanceConversion = val * 0.0001798706
+                DistanceConverter = val * 0.0001798706
             Case 33
-                DistanceConversion = val * 0.0005396118
+                DistanceConverter = val * 0.0005396118
             Case 34
-                DistanceConversion = val * 0.0006757652
+                DistanceConverter = val * 0.0006757652
             Case 35
-                DistanceConversion = val * 0.0049709695
+                DistanceConverter = val * 0.0049709695
             Case 36
-                DistanceConversion = val * 0.0497097
+                DistanceConverter = val * 0.0497097
             Case 37
-                DistanceConversion = val * 0.164042
-            Case 38
-                DistanceConversion = val * 0.198839
-            Case 39
-                DistanceConversion = val * 0.198839
-            Case 40
-                DistanceConversion = val * 0.198839
+                DistanceConverter = val * 0.164042
+            Case 38, 39, 40
+                DistanceConverter = val * 0.198839
             Case 41
-                DistanceConversion = val * 0.546807
+                DistanceConverter = val * 0.546807
             Case 42
-                DistanceConversion = val * 4.97097
+                DistanceConverter = val * 4.97097
             Case 43
-                DistanceConversion = val * 2.187227
+                DistanceConverter = val * 2.187227
             Case 44
-                DistanceConversion = val * 9.84252
+                DistanceConverter = val * 9.84252
             Case 45
-                DistanceConversion = val * 4.374453
+                DistanceConverter = val * 4.374453
             Case 46
-                DistanceConversion = val * 8.748906
+                DistanceConverter = val * 8.748906
             Case 47
-                DistanceConversion = val * 17.497813
+                DistanceConverter = val * 17.497813
             Case 48
-                DistanceConversion = val * 0.364538
+                DistanceConverter = val * 0.364538
             Case 49
-                DistanceConversion = val * 0.472063
-            Case 50
-                DistanceConversion = val * 3937.007874
-            Case 51
-                DistanceConversion = val * 3937.007874
+                DistanceConverter = val * 0.472063
+            Case 50, 51
+                DistanceConverter = val * 3937.007874
             Case 52
-                DistanceConversion = val * 236.220472
+                DistanceConverter = val * 236.220472
             Case 53
-                DistanceConversion = val * 2834.645664
+                DistanceConverter = val * 2834.645664
             Case 54
-                DistanceConversion = val * 56692.91328
+                DistanceConverter = val * 56692.91328
             Case 55
-                DistanceConversion = val * 118.110236
+                DistanceConverter = val * 118.110236
             Case 56
-                DistanceConversion = val * 39.37
+                DistanceConverter = val * 39.37
             Case 57
-                DistanceConversion = val * 0.0002071233
+                DistanceConverter = val * 0.0002071233
             Case 58
-                DistanceConversion = val * 0.0006213699
+                DistanceConverter = val * 0.0006213699
             Case 59
-                DistanceConversion = val * 3.280833
+                DistanceConverter = val * 3.280833
             Case 60
-                DistanceConversion = val * 4.970959
+                DistanceConverter = val * 4.970959
             Case 61
-                DistanceConversion = val * 1.684132
+                DistanceConverter = val * 1.684132
             Case 62
-                DistanceConversion = val * 0.561377
+                DistanceConverter = val * 0.561377
             Case 63
-                DistanceConversion = val * 10000000000#
+                DistanceConverter = val * 10000000000#
             Case 64
-                DistanceConversion = val * 18899990000#
+                DistanceConverter = val * 18899990000#
             Case 65
-                DistanceConversion = val * 9979996000000#
+                DistanceConverter = val * 9979996000000#
             Case 66
-                DistanceConversion = val * 999999600000000#
+                DistanceConverter = val * 999999600000000#
             Case 67
-                DistanceConversion = val * 0.0170877
+                DistanceConverter = val * 0.0170877
             Case 68
-                DistanceConversion = val * 0.0281859
-            Case 69
-                DistanceConversion = val * 0.399129
-            Case 70
-                DistanceConversion = val * 0.399129
+                DistanceConverter = val * 0.0281859
+            Case 69, 70
+                DistanceConverter = val * 0.399129
             Case 71
-                DistanceConversion = val * 1.197387
+                DistanceConverter = val * 1.197387
             Case 72
-                DistanceConversion = val * 0.312461
+                DistanceConverter = val * 0.312461
             Case 73
-                DistanceConversion = val * 1.874766
+                DistanceConverter = val * 1.874766
             Case 74
-                DistanceConversion = val * 0.0020000004
+                DistanceConverter = val * 0.0020000004
             Case 75
-                DistanceConversion = val * 0.3
-            Case 76
-                DistanceConversion = val * 3
-            Case 77
-                DistanceConversion = val * 30
+                DistanceConverter = val * 0.3
+            Case 76, 77
+                DistanceConverter = DistanceConverter(val, src, dest - 1) * 10
         End Select
     ElseIf (dest = 1) Then
         Select Case src
             Case 2
-                DistanceConversion = val / 0.001
+                DistanceConverter = val * 1000
             Case 3
-                DistanceConversion = val / 100
-            Case 4
-                DistanceConversion = val / 1000
-            Case 5
-                DistanceConversion = val / 1000000
-            Case 6
-                DistanceConversion = val / 1000000
-            Case 7
-                DistanceConversion = val / 1000000000#
-            Case 8
-                DistanceConversion = val / 1000000000000#
+                DistanceConverter = val * 0.01
+            Case 4, 24
+                DistanceConverter = DistanceConverter(val, src - 1, dest) * 0.1
+            Case 5, 6
+                DistanceConverter = val * 0.000001
+            Case 7, 8, 26
+                DistanceConverter = DistanceConverter(val, src - 1, dest) * 0.001
             Case 9
-                DistanceConversion = val / 10
+                DistanceConverter = val * 0.1
             Case 10
-                DistanceConversion = val / 0.0001799856
+                DistanceConverter = val / 0.0001799856
             Case 11
-                DistanceConversion = val / 0.0005399568
+                DistanceConverter = val / 0.0005399568
             Case 12
-                DistanceConversion = val / 39.370078740157
+                DistanceConverter = val / 39.370078740157
             Case 13
-                DistanceConversion = val / 1.093613
+                DistanceConverter = val / 1.093613
             Case 14
-                DistanceConversion = val / 3.280839
+                DistanceConverter = val / 3.280839
             Case 15
-                DistanceConversion = val / 0.0002071237
+                DistanceConverter = val / 0.0002071237
             Case 16
-                DistanceConversion = val / 0.0006213711
+                DistanceConverter = val / 0.0006213711
             Case 17
-                DistanceConversion = val / 1.056970721911E-16
-            Case 18
-                DistanceConversion = val / 1E-18
-            Case 19
-                DistanceConversion = val / 0.000000000000001
-            Case 20
-                DistanceConversion = val / 0.000000000001
-            Case 21
-                DistanceConversion = val / 0.000000001
-            Case 22
-                DistanceConversion = val / 0.000001
+                DistanceConverter = val / 1.056970721911E-16
+            Case 18 To 22
+                DistanceConverter = DistanceConverter(val, src + 1, dest) * 1000
             Case 23
-                DistanceConversion = val / 0.01
-            Case 24
-                DistanceConversion = val / 0.1
+                DistanceConverter = val * 100
             Case 25
-                DistanceConversion = val / 1E+15
-            Case 26
-                DistanceConversion = val / 1E+18
+                DistanceConverter = val * 0.000000000000001
             Case 27
-                DistanceConversion = val / 3.2407792899604E-17
+                DistanceConverter = val / 3.2407792899604E-17
             Case 28
-                DistanceConversion = val / 6.6845871222684E-12
+                DistanceConverter = val / 6.6845871222684E-12
             Case 29
-                DistanceConversion = val / 0.874891
+                DistanceConverter = val / 0.874891
             Case 30
-                DistanceConversion = val / 39370.07874
+                DistanceConverter = val / 39370.07874
             Case 31
-                DistanceConversion = val / 39370078.739999
+                DistanceConverter = val / 39370078.739999
             Case 32
-                DistanceConversion = val / 0.0001798706
+                DistanceConverter = val / 0.0001798706
             Case 33
-                DistanceConversion = val / 0.0005396118
+                DistanceConverter = val / 0.0005396118
             Case 34
-                DistanceConversion = val / 0.0006757652
+                DistanceConverter = val / 0.0006757652
             Case 35
-                DistanceConversion = val / 0.0049709695
+                DistanceConverter = val / 0.0049709695
             Case 36
-                DistanceConversion = val / 0.0497097
+                DistanceConverter = val / 0.0497097
             Case 37
-                DistanceConversion = val / 0.164042
-            Case 38
-                DistanceConversion = val / 0.198839
-            Case 39
-                DistanceConversion = val / 0.198839
-            Case 40
-                DistanceConversion = val / 0.198839
+                DistanceConverter = val / 0.164042
+            Case 38, 39, 40
+                DistanceConverter = val / 0.198839
             Case 41
-                DistanceConversion = val / 0.546807
+                DistanceConverter = val / 0.546807
             Case 42
-                DistanceConversion = val / 4.97097
+                DistanceConverter = val / 4.97097
             Case 43
-                DistanceConversion = val / 2.187227
+                DistanceConverter = val / 2.187227
             Case 44
-                DistanceConversion = val / 9.84252
+                DistanceConverter = val / 9.84252
             Case 45
-                DistanceConversion = val / 4.374453
+                DistanceConverter = val / 4.374453
             Case 46
-                DistanceConversion = val / 8.748906
+                DistanceConverter = val / 8.748906
             Case 47
-                DistanceConversion = val / 17.497813
+                DistanceConverter = val / 17.497813
             Case 48
-                DistanceConversion = val / 0.364538
+                DistanceConverter = val / 0.364538
             Case 49
-                DistanceConversion = val / 0.472063
-            Case 50
-                DistanceConversion = val / 3937.007874
-            Case 51
-                DistanceConversion = val / 3937.007874
+                DistanceConverter = val / 0.472063
+            Case 50, 51
+                DistanceConverter = val / 3937.007874
             Case 52
-                DistanceConversion = val / 236.220472
+                DistanceConverter = val / 236.220472
             Case 53
-                DistanceConversion = val / 2834.645664
+                DistanceConverter = val / 2834.645664
             Case 54
-                DistanceConversion = val / 56692.91328
+                DistanceConverter = val / 56692.91328
             Case 55
-                DistanceConversion = val / 118.110236
+                DistanceConverter = val / 118.110236
             Case 56
-                DistanceConversion = val / 39.37
+                DistanceConverter = val / 39.37
             Case 57
-                DistanceConversion = val / 0.0002071233
+                DistanceConverter = val / 0.0002071233
             Case 58
-                DistanceConversion = val / 0.0006213699
+                DistanceConverter = val / 0.0006213699
             Case 59
-                DistanceConversion = val / 3.280833
+                DistanceConverter = val / 3.280833
             Case 60
-                DistanceConversion = val / 4.970959
+                DistanceConverter = val / 4.970959
             Case 61
-                DistanceConversion = val / 1.684132
+                DistanceConverter = val / 1.684132
             Case 62
-                DistanceConversion = val / 0.561377
+                DistanceConverter = val / 0.561377
             Case 63
-                DistanceConversion = val / 10000000000#
+                DistanceConverter = val / 10000000000#
             Case 64
-                DistanceConversion = val / 18899990000#
+                DistanceConverter = val / 18899990000#
             Case 65
-                DistanceConversion = val / 9979996000000#
+                DistanceConverter = val / 9979996000000#
             Case 66
-                DistanceConversion = val / 999999600000000#
+                DistanceConverter = val / 999999600000000#
             Case 67
-                DistanceConversion = val / 0.0170877
+                DistanceConverter = val / 0.0170877
             Case 68
-                DistanceConversion = val / 0.0281859
-            Case 69
-                DistanceConversion = val / 0.399129
-            Case 70
-                DistanceConversion = val / 0.399129
+                DistanceConverter = val / 0.0281859
+            Case 69, 70
+                DistanceConverter = val / 0.399129
             Case 71
-                DistanceConversion = val / 1.197387
+                DistanceConverter = val / 1.197387
             Case 72
-                DistanceConversion = val / 0.312461
+                DistanceConverter = val / 0.312461
             Case 73
-                DistanceConversion = val / 1.874766
+                DistanceConverter = val / 1.874766
             Case 74
-                DistanceConversion = val / 0.0020000004
+                DistanceConverter = val / 0.0020000004
             Case 75
-                DistanceConversion = val / 0.3
-            Case 76
-                DistanceConversion = val / 3
-            Case 77
-                DistanceConversion = val / 30
+                DistanceConverter = val / 0.3
+            Case 76, 77
+                DistanceConverter = DistanceConverter(val, src - 1, dest) * 10
         End Select
     Else
-        tmp = DistanceConversion(val, src, 1)
-        DistanceConversion = DistanceConversion(tmp, 1, dest)
+        tmp = DistanceConverter(val, src, 1)
+        DistanceConverter = DistanceConverter(tmp, 1, dest)
     End If
 End Function
 
@@ -762,7 +897,7 @@ End Function
 '7 : MC  (Millicoulomb)
 '8 : µC  (Microcoulomb)
 '9 : NC  (Nanocoulomb)
-Public Function ElectricLoadConversion(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+Public Function ElectricChargeConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
     Dim tmp As Double
 
     If (dest < 1 Or dest > 9) Then
@@ -774,63 +909,473 @@ Public Function ElectricLoadConversion(ByVal val As Double, ByVal src As Integer
     End If
 
     If (src = dest Or val = 0) Then
-        ElectricLoadConversion = val
+        ElectricChargeConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2, 6
+                ElectricChargeConverter = val * 3600
+            Case 3
+                ElectricChargeConverter = val * 0.037311367755258
+            Case 4
+                ElectricChargeConverter = val * 2.2469434729634E+22
+            Case 5
+                ElectricChargeConverter = val * 1000
+            Case 7
+                ElectricChargeConverter = val * 3600000
+            Case 8, 9
+                ElectricChargeConverter = ElectricChargeConverter(val, src, dest - 1) * 1000
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2, 6
+                ElectricChargeConverter = val / 3600
+            Case 3
+                ElectricChargeConverter = val * 26.801483305556
+            Case 4
+                ElectricChargeConverter = val * 4.4504902416667E-23
+            Case 5
+                ElectricChargeConverter = val * 0.001
+            Case 7
+                ElectricChargeConverter = val / 3600000
+            Case 8, 9
+                ElectricChargeConverter = ElectricChargeConverter(val, src - 1, dest) / 1000
+        End Select
+    Else
+        tmp = ElectricChargeConverter(val, src, 1)
+        ElectricChargeConverter = ElectricChargeConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between energy units.
+'To chose source and destination units (default destination is 1 : joule [J]):
+'1  : J (joule)
+'2  : GJ (gigajoule)
+'3  : MJ (megajoule)
+'4  : kJ (kilojoule)
+'5  : kcal (kilocalory)
+'6  : cal (calory)
+'7  : kWh (Kilowatt-hour)
+'8  : MWh (Megawatt-hou)
+'9  : Wh (Watt-hour)
+'10 : Ws (Watt-second)
+'11 : koe (kilo of oil equivalent)
+'12 : toe (ton of oil equivalent)
+'13 : ktoe (kiloton of oil equivalent)
+'14 : Mtoe (megaton of oil equivalent)
+'15 : boe (barrel of oil equivalent)
+'16 : kboe (thousand barrel of oil equivalent)
+'17 : Mboe (million barrel of oil equivalent)
+'18 : Gm3 NG (billion cubic meter of natural gas)
+'19 : Gft3 NG (billion cubic foot of natural gas)
+'20 : Mt LNG (megaton of liquefied natural gas)
+'21 : Gt LNG (gigaton of liquefied natural gas)
+'22 : kg SKE (kilogram hard coal)
+'23 : t SKE (ton hard coal)
+'24 : GeV (gigaelectronvolt)
+'25 : TeV (tera-electronvolt)
+'26 : MeV (mega-electronvolt)
+'27 : keV (kilo-electronvolt)
+'28 : eV (electronvolt)
+'29 : Btu (British termal unit)
+'30 : MMBtu (million btu)
+'31 : thm (therm)
+'32 : quad (quad)
+'33 : erg (erg)
+'34 : Mt (megaton TNT)
+'35 : kT (kiloton TNT)
+'36 : ft-lb (Foot-pound)
+Public Function EnergyConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 36) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 36) Then
+        src = 1
+    End If
+
+    If (dest = src Or val = 0) Then
+        EnergyConverter = dest
     ElseIf (src = 1) Then
         Select Case dest
             Case 2
-                ElectricLoadConversion = val * 3600
-            Case 3
-                ElectricLoadConversion = val * 0.037311367755258
-            Case 4
-                ElectricLoadConversion = val * 2.2469434729634E+22
+                EnergyConverter = val * 0.000000001
+            Case 3, 4, 8, 12 To 14, 16, 17, 21, 25
+                EnergyConverter = EnergyConverter(val, src, dest - 1) * 0.001
             Case 5
-                ElectricLoadConversion = val * 1000
+                EnergyConverter = val / 4186.8
             Case 6
-                ElectricLoadConversion = val * 3600
+                EnergyConverter = val / 4.1868
             Case 7
-                ElectricLoadConversion = val * 3600000
-            Case 8
-                ElectricLoadConversion = val * 3600000000#
+                EnergyConverter = val / 3600000
             Case 9
-                ElectricLoadConversion = val * 3600000000000#
+                EnergyConverter = val / 3600
+            Case 10
+                EnergyConverter = val
+            Case 11
+                EnergyConverter = val / 41868000
+            Case 15
+                EnergyConverter = val / 5861520000#
+            Case 18
+                EnergyConverter = val / 3.76812E+16
+            Case 19
+                EnergyConverter = val / 1.088568E+15
+            Case 20
+                EnergyConverter = val / 5.200993789E+16
+            Case 22
+                EnergyConverter = val / 29307600
+            Case 23
+                EnergyConverter = val / 29307600000#
+            Case 24
+                EnergyConverter = val / 1.602176487E-10
+            Case 26
+                EnergyConverter = val / 1.602176487E-13
+            Case 27, 28
+                EnergyConverter = EnergyConverter(val, src, dest - 1) * 1000
+            Case 29
+                EnergyConverter = val / 1055.87
+            Case 30
+                EnergyConverter = val / 1055870000
+            Case 31
+                EnergyConverter = val / 105587000
+            Case 32
+                EnergyConverter = val / 1.05587E+18
+            Case 33
+                EnergyConverter = val * 10000000
+            Case 34
+                EnergyConverter = val / 4.184E+15
+            Case 35
+                EnergyConverter = val / 4184000000000#
+            Case 36
+                EnergyConverter = val / 1.3558179483314
         End Select
     ElseIf (dest = 1) Then
         Select Case src
             Case 2
-                ElectricLoadConversion = val / 3600
-            Case 3
-                ElectricLoadConversion = val * 26.801483305556
-            Case 4
-                ElectricLoadConversion = val * 4.4504902416667E-23
+                EnergyConverter = val * 1000000000
+            Case 3, 4, 8, 12 To 14, 16, 17, 21, 25
+                EnergyConverter = EnergyConverter(val, src - 1, dest) * 1000
             Case 5
-                ElectricLoadConversion = val * 0.001
+                EnergyConverter = val * 4186.8
             Case 6
-                ElectricLoadConversion = val / 3600
+                EnergyConverter = val * 4.1868
             Case 7
-                ElectricLoadConversion = val / 3600000
-            Case 8
-                ElectricLoadConversion = val / 3600000000#
+                EnergyConverter = val * 3600000
             Case 9
-                ElectricLoadConversion = val / 3600000000000#
+                EnergyConverter = val * 3600
+            Case 10
+                EnergyConverter = val
+            Case 11
+                EnergyConverter = val * 41868000
+            Case 15
+                EnergyConverter = val * 5861520000#
+            Case 18
+                EnergyConverter = val * 3.76812E+16
+            Case 19
+                EnergyConverter = val * 1.088568E+15
+            Case 20
+                EnergyConverter = val * 5.200993789E+16
+            Case 22
+                EnergyConverter = val * 29307600
+            Case 23
+                EnergyConverter = val * 29307600000#
+            Case 24
+                EnergyConverter = val * 1.602176487E-10
+            Case 26
+                EnergyConverter = val * 1.602176487E-13
+            Case 27, 28
+                EnergyConverter = EnergyConverter(val, src - 1, dest) * 0.001
+            Case 29
+                EnergyConverter = val * 1055.87
+            Case 30
+                EnergyConverter = val * 1055870000
+            Case 31
+                EnergyConverter = val * 105587000
+            Case 32
+                EnergyConverter = val * 1.05587E+18
+            Case 33
+                EnergyConverter = val * 0.0000001
+            Case 34
+                EnergyConverter = val * 4.184E+15
+            Case 35
+                EnergyConverter = val * 4184000000000#
+            Case 36
+                EnergyConverter = val * 1.3558179483314
         End Select
     Else
-        tmp = ElectricLoadConversion(val, src, 1)
-        ElectricLoadConversion = ElectricLoadConversion(tmp, 1, dest)
+        tmp = EnergyConverter(val, src, 1)
+        EnergyConverter = EnergyConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between equivalent dose units
+'To chose source and destination units (default destination = 1 [sievert])
+'1  : Sv (sievert)
+'2  : kSv (kilosievert)
+'3  : hSv (hectosievert)
+'4  : daSv (decasievert)
+'5  : dSv (decisievert)
+'6  : cSv (centisievert)
+'7  : mSv (millisievert)
+'8  : µSv (microsievert)
+'9  : nSv (nanosievert)
+'10 : krem (kilorem) (roentgen equivalent)
+'11 : hrem (hectorem) (roentgen equivalent)
+'12 : darem (decarem) (roentgen equivalent)
+'13 : rem (rem) (roentgen equivalent)
+'14 : drem (decirem) (roentgen equivalent)
+'15 : crem (centirem) (roentgen equivalent)
+'16 : mrem (millirem) (roentgen equivalent)
+'17 : µrem (microrem) (roentgen equivalent)
+'18 : nrem (nanorem) (roentgen equivalent)
+Public Function EquivalentDoseconverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 18) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 18) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        EquivalentDoseconverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                EquivalentDoseconverter = val * 0.001
+            Case 3, 4, 6, 7, 13, 14, 16
+                EquivalentDoseconverter = EquivalentDoseconverter(val, src, dest - 1) * 10
+            Case 10
+                EquivalentDoseconverter = val * 0.1
+            Case 5, 12
+                EquivalentDoseconverter = val * 10
+            Case 8, 9, 17, 18
+                EquivalentDoseconverter = EquivalentDoseconverter(val, src, dest - 1) * 1000
+            Case 11
+                EquivalentDoseconverter = val
+            Case 15
+                EquivalentDoseconverter = val * 10000
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                EquivalentDoseconverter = val * 1000
+            Case 3, 4, 6, 7, 13, 14, 16
+                EquivalentDoseconverter = EquivalentDoseconverter(val, src - 1, dest) * 0.1
+            Case 10
+                EquivalentDoseconverter = val * 10
+            Case 5, 12
+                EquivalentDoseconverter = val * 0.1
+            Case 8, 9, 17, 18
+                EquivalentDoseconverter = EquivalentDoseconverter(val, src - 1, dest) * 0.001
+            Case 11
+                EquivalentDoseconverter = val
+            Case 15
+                EquivalentDoseconverter = val * 0.0001
+        End Select
+    Else
+        tmp = EquivalentDoseconverter(val, src, 1)
+        EquivalentDoseconverter = EquivalentDoseconverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between force units
+'To chose source and destination units (default destination = 1 [Newton])
+'1  : N (Newton)
+'2  : MN (meganewton)
+'3  : kN (kilonewton)
+'4  : hN (hectonewton)
+'5  : daN (decanewton)
+'6  : dN (decinewton)
+'7  : mN (millinewton)
+'8  : Mdyn (megadyne)
+'9  : kdyn (kilodyne)
+'10 : dyn (dyne)
+'11 : mdyn (millidyne)
+'12 : µdyn (microdyn)
+'13 : kp (kilopond)
+'14 : lbf (pound)
+'15 : pdl (poundal)
+Public Function ForceConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 15) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 15) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        ForceConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                ForceConverter = val * 0.000001
+            Case 4
+                ForceConverter = val * 0.01
+            Case 5, 8
+                ForceConverter = val * 0.1
+            Case 6
+                ForceConverter = val * 10
+            Case 7
+                ForceConverter = val * 1000
+            Case 9
+                ForceConverter = val * 100
+            Case 3, 10 To 12
+                ForceConverter = ForceConverter(val, src, dest - 1) * 1000
+            Case 13
+                ForceConverter = val / 9.80665
+            Case 14
+                ForceConverter = val / 4.4482216152605
+            Case 15
+                ForceConverter = val / 0.138255
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                ForceConverter = val * 1000000
+            Case 4
+                ForceConverter = val * 100
+            Case 5, 8
+                ForceConverter = val * 10
+            Case 6
+                ForceConverter = val * 0.1
+            Case 7
+                ForceConverter = val * 0.001
+            Case 9
+                ForceConverter = val * 0.01
+            Case 3, 10 To 12
+                ForceConverter = ForceConverter(val, src - 1, dest) * 0.001
+            Case 13
+                ForceConverter = val * 9.80665
+            Case 14
+                ForceConverter = val * 4.4482216152605
+            Case 15
+                ForceConverter = val * 0.138255
+        End Select
+    Else
+        tmp = ForceConverter(val, src, 1)
+        ForceConverter = ForceConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between frequency units
+'To chose source and destination units (default destination = 1 [hertz])
+'1  : Hz (hertz)
+'2  : PHz (petahertz)
+'3  : THz (terahertz)
+'4  : GHz (gigahertz)
+'5  : MHz (megahertz)
+'6  : kHz (kilohertz)
+'7  : hHz (hectohertz)
+'8  : daHz (decahertz)
+'9  : dHz (decihertz)
+'10 : cHz (centihertz)
+'11 : mHz (millihertz)
+'12 : fresnel (Fresnel)
+'13 : cps (cycle per second)
+'14 : d(p) (day(period))
+'15 : h(p) (hour(period))
+'16 : min(p) (minute(period))
+'17 : ks(p) (kilosecond(period))
+'18 : hs(p) (hectosecond(period))
+'19 : das(p) (decasecond(period))
+'20 : s(p) (second(period))
+'21 : ds(p) (decisecond(period))
+'22 : cs(p) (centisecond(period))
+'23 : ms(p) (millisecond(period))
+'24 : µs(p) (microsecond(period))
+'25 : ns(p) (nanosecond(period))
+Public Function FrequenceConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 25) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 25) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        FrequenceConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                FrequenceConverter = val * 0.000000000000001
+            Case 3 To 6, 25
+                FrequenceConverter = FrequenceConverter(val, src, dest - 1) * 1000
+            Case 7, 18
+                FrequenceConverter = val * 0.01
+            Case 9, 21
+                FrequenceConverter = val * 10
+            Case 8, 10, 11, 19, 22, 23
+                FrequenceConverter = FrequenceConverter(val, src, dest - 1) * 10
+            Case 12
+                FrequenceConverter = val * 0.000000000001
+            Case 13, 20
+                FrequenceConverter = val
+            Case 14
+                FrequenceConverter = val / 86400
+            Case 15
+                FrequenceConverter = val / 3600
+            Case 16
+                FrequenceConverter = val / 60
+            Case 17
+                FrequenceConverter = val * 0.001
+            Case 24
+                FrequenceConverter = val * 1000000
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                FrequenceConverter = val * 1E+15
+            Case 3 To 6, 25
+                FrequenceConverter = FrequenceConverter(val, src - 1, dest) * 0.001
+            Case 7, 18
+                FrequenceConverter = val * 100
+            Case 9, 21
+                FrequenceConverter = val * 0.1
+            Case 8, 10, 11, 19, 22, 23
+                FrequenceConverter = FrequenceConverter(val, src - 1, dest) * 0.1
+            Case 12
+                FrequenceConverter = val * 1000000000000#
+            Case 13, 20
+                FrequenceConverter = val
+            Case 14
+                FrequenceConverter = val * 86400
+            Case 15
+                FrequenceConverter = val * 3600
+            Case 16
+                FrequenceConverter = val * 60
+            Case 17
+                FrequenceConverter = val * 1000
+            Case 24
+                FrequenceConverter = val * 0.000001
+        End Select
+    Else
+        tmp = FrequenceConverter(val, src, 1)
+        FrequenceConverter = FrequenceConverter(tmp, 1, dest)
     End If
 End Function
 
 'Function to convert between fuel consumption units
 'To chose source and destination units (default destination = 1 [liters/100km])
-'1  : L/100km     (Liter per 100 kilometers)
-'2  : L/km        (Liter per kilometer)
+'1  : l/100km     (liter per 100 kilometers)
+'2  : l/km        (liter per kilometer)
 '3  : Gal/100Km   (gallon per 100 kilometers)
 '4  : Gal/km      (gallon per kilometer)
-'5  : Km/L        (kilometer per litre)
+'5  : Km/l        (kilometer per liter)
 '6  : Km/gal (US) (kilometer by gallon (US))
 '7  : Km/gal (UK) (kilometer by gallon (UK))
 '8  : Mpg (US)    (mille per gallon (US))
 '9  : Mpg (UK     (mille per gallon (UK))
-Public Function FuelConsumptionConversion(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+Public Function FuelConsumptionConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
     Dim tmp As Double
 
     If (dest < 1 Or dest > 9) Then
@@ -842,48 +1387,660 @@ Public Function FuelConsumptionConversion(ByVal val As Double, ByVal src As Inte
     End If
 
     If (src = dest Or val = 0) Then
-        FuelConsumptionConversion = val
+        FuelConsumptionConverter = val
     ElseIf (src = 1) Then
         Select Case dest
             Case 2
-                FuelConsumptionConversion = val * 0.01
+                FuelConsumptionConverter = val * 0.01
             Case 3
-                FuelConsumptionConversion = val * 0.26417205235815
+                FuelConsumptionConverter = val * 0.26417205235815
             Case 4
-                FuelConsumptionConversion = val * 2.6417205235815E-03
+                FuelConsumptionConverter = val * 2.6417205235815E-03
             Case 5
-                FuelConsumptionConversion = val * 100
+                FuelConsumptionConverter = val * 100
             Case 6
-                FuelConsumptionConversion = val * 378.541178
+                FuelConsumptionConverter = val * 378.541178
             Case 7
-                FuelConsumptionConversion = val * 454.609188
+                FuelConsumptionConverter = val * 454.609188
             Case 8
-                FuelConsumptionConversion = val * 235.2145833
+                FuelConsumptionConverter = val * 235.2145833
             Case 9
-                FuelConsumptionConversion = val * 282.4809363
+                FuelConsumptionConverter = val * 282.4809363
         End Select
     ElseIf (dest = 1) Then
         Select Case src
             Case 2
-                FuelConsumptionConversion = val * 100
+                FuelConsumptionConverter = val * 100
             Case 3
-                FuelConsumptionConversion = val * 3.785411784
+                FuelConsumptionConverter = val * 3.785411784
             Case 4
-                FuelConsumptionConversion = val * 378.5411784
+                FuelConsumptionConverter = val * 378.5411784
             Case 5
-                FuelConsumptionConversion = 100 / val
+                FuelConsumptionConverter = 100 / val
             Case 6
-                FuelConsumptionConversion = 378.541178 / val
+                FuelConsumptionConverter = 378.541178 / val
             Case 7
-                FuelConsumptionConversion = 454.609188 / val
+                FuelConsumptionConverter = 454.609188 / val
             Case 8
-                FuelConsumptionConversion = 235.2145833 / val
+                FuelConsumptionConverter = 235.2145833 / val
             Case 9
-                FuelConsumptionConversion = 282.4809363 / val
+                FuelConsumptionConverter = 282.4809363 / val
         End Select
     Else
-        tmp = FuelConsumptionConversion(val, src, 1)
-        FuelConsumptionConversion = FuelConsumptionConversion(tmp, 1, dest)
+        tmp = FuelConsumptionConverter(val, src, 1)
+        FuelConsumptionConverter = FuelConsumptionConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between illuminance units
+'To chose source and destination units (default destination = 1 [lux])
+'1  : lx (lux)
+'2  : lmm2 (lumen per square meter)
+'3  : lmcm2 (lument per square centimeter)
+'4  : ph (phot)
+'5  : nx (nox)
+Public Function IlluminanceConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 5) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 5) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        IlluminanceConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                IlluminanceConverter = val
+            Case 3, 4
+                IlluminanceConverter = val * 0.0001
+            Case 5
+                IlluminanceConverter = val * 1000
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                IlluminanceConverter = val
+            Case 3
+                IlluminanceConverter = val * 10000
+            Case 5
+                IlluminanceConverter = val * 0.001
+        End Select
+    Else
+        tmp = IlluminanceConverter(val, src, 1)
+        IlluminanceConverter = IlluminanceConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between mass units
+'To chose source and destination units (default destination = 1 [kilogram])
+'1  : kg (kilogram)
+'2  : hg (hectogram)
+'3  : dag (decagram)
+'4  : g (gram)
+'5  : dg (decigram)
+'6  : cg (centigram)
+'7  : mg (milligram)
+'8  : µg (microgram)
+'9  : kt (kiloton) (metric)
+'10 : ht (hectoton) (metric)
+'11 : dat (decaton) (metric)
+'12 : t (ton) (metric)
+'13 : dt (deciton) (metric)
+'14 : ct (centiton) (metric)
+'15 : mt (milliton) (metric)
+'16 : amu (atomic mass unit)
+'17 : carat (metric carat)
+'18 : dr (dram)
+'19 : gr (grain)
+'20 : hundredweight (UK)
+'21 : oz (ounce)
+'22 : dwt (pennyweight)
+'23 : lb (pound)
+'24 : quarter
+'25 : stone
+'26 : ton (long)
+'27 : ton (short)
+'28 : troy ounce
+Public Function MassConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 28) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 28) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        MassConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                MassConverter = val * 10
+            Case 3 To 7
+                MassConverter = MassConverter(val, src, dest - 1) * 10
+            Case 8
+                MassConverter = val * 1000000000#
+            Case 9
+                MassConverter = val * 0.0000001
+            Case 10 To 14
+                MassConverter = MassConverter(val, src, dest + 1) * 0.1
+            Case 15
+                MassConverter = val
+            Case 16
+                MassConverter = val * 6.022136651675E+26
+            Case 17
+                MassConverter = val * 5000
+            Case 18
+                MassConverter = val * 564.3833911933
+            Case 19
+                MassConverter = val * 1000
+            Case 20
+                MassConverter = val * 0.01968413055222
+            Case 21
+                MassConverter = val * 35.27396194958
+            Case 22
+                MassConverter = val * 643.0149313726
+            Case 23
+                MassConverter = val * 2.204622621849
+            Case 24
+                MassConverter = val * 0.07873652220889
+            Case 25
+                MassConverter = val * 0.1574730444178
+            Case 26
+                MassConverter = val * 9.842065276111E-04
+            Case 27
+                MassConverter = val * 0.001102311310924
+            Case 28
+                MassConverter = val * 32.15074656863
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                MassConverter = val * 0.1
+            Case 3 To 7
+                MassConverter = MassConverter(val, src - 1, dest) * 0.1
+            Case 8
+                MassConverter = val * 0.000000001
+            Case 9
+                MassConverter = val * 10000000
+            Case 10 To 14
+                MassConverter = MassConverter(val, src - 1, dest) * 10
+            Case 15
+                MassConverter = val
+            Case 16
+                MassConverter = val / 6.022136651675E+26
+            Case 17
+                MassConverter = val * 0.0002
+            Case 19
+                MassConverter = val * 0.001
+            Case 18
+                MassConverter = val / 564.3833911933
+            Case 20
+                MassConverter = val / 0.01968413055222
+            Case 21
+                MassConverter = val / 35.27396194958
+            Case 22
+                MassConverter = val / 643.0149313726
+            Case 23
+                MassConverter = val / 2.204622621849
+            Case 24
+                MassConverter = val / 0.07873652220889
+            Case 25
+                MassConverter = val / 0.1574730444178
+            Case 26
+                MassConverter = val / 9.842065276111E-04
+            Case 27
+                MassConverter = val / 0.001102311310924
+            Case 28
+                MassConverter = val / 32.15074656863
+        End Select
+    Else
+        tmp = MassConverter(val, src, 1)
+        MassConverter = MassConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between memory size units
+'To chose source and destination units (default destination = 1 [byte])
+'1  : B (byte)
+'2  : bit (bit)
+'3  : KB (kilobyte)
+'4  : MB (megabyte)
+'5  : GB (gigabyte)
+'6  : TB (terabyte)
+'7  : PB (petabyte)
+'8  : EB (exabyte)
+'9  : ZB (zettabyte)
+'10 : YB (yottabyte)
+'11 : KiB (kibibyte)
+'12 : MiB (mebibyte)
+'13 : GiB (gibibyte)
+'14 : TiB (tebibyte)
+'15 : PiB (pebibyte)
+'16 : EiB (exbibyte)
+'17 : ZiB (zebibyte)
+'18 : Yib (yobibyte)
+'19 : kbit (kilobit)
+'20 : Mbit (megabit)
+'21 : Gbit (gigabit)
+'22 : Tbit (terabit)
+'23 : Pbit (petabit)
+'24 : Ebit (exabit)
+'25 : Zbit (zetabit)
+'26 : Ybit (yottabit)
+'27 : kibit (kibibit)
+'28 : Mibit (mebibit)
+'29 : Gibit (gibibit)
+'30 : Tibit (tibibit)
+'31 : Pibit (pebibit)
+'32 : Eibit (exbibit)
+'33 : Zibit (zebibit)
+'34 : Yibit (yobibit)
+Public Function MemorySizeConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 34) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 34) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        MemorySizeConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                MemorySizeConverter = val * 8
+            Case 3
+                MemorySizeConverter = val * 0.001
+            Case 4 To 10, 20 To 26
+                MemorySizeConverter = MemorySizeConverter(val, src, dest - 1) / 1000
+            Case 11
+                MemorySizeConverter = val / 1024
+            Case 12 To 18, 28 To 34
+                MemorySizeConverter = MemorySizeConverter(val, src, dest - 1) / 1024
+            Case 19
+                MemorySizeConverter = val * 0.008
+            Case 27
+                MemorySizeConverter = val / 128
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                MemorySizeConverter = val * 0.125
+            Case 3
+                MemorySizeConverter = val * 1000
+            Case 4 To 10, 20 To 26
+                MemorySizeConverter = MemorySizeConverter(val, src, dest - 1) * 1000
+            Case 11
+                MemorySizeConverter = val * 1024
+            Case 12 To 18, 28 To 34
+                MemorySizeConverter = MemorySizeConverter(val, src, dest - 1) * 1024
+            Case 19
+                MemorySizeConverter = val * 125
+            Case 27
+                MemorySizeConverter = val * 128
+        End Select
+    Else
+        tmp = MemorySizeConverter(val, src, 1)
+        MemorySizeConverter = MemorySizeConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between Power units
+'To chose source and destination units (default destination = 1 [Watt])
+'1  : w (Watt)
+'2  : kW (kilowatt)
+'3  : mW (milliwatt)
+'4  : MW (megawatt)
+'5  : GW (gigawatt)
+'6  : TW (terawatt)
+'7  : PW (petawatt)
+'8  : µW (microwatt)
+'9  : nW (nanowatt)
+'10 : pW (picowatt)
+'11 : fW (femtowatt)
+'12 : zW (zptowatt)
+'13 : hp (metric horsepower)
+'14 : bhp (mechanical horsepower)
+'15 : refrigerationton (refigeration ton)
+Public Function PowerConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 15) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 15) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        PowerConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                PowerConverter = val * 0.001
+            Case 3
+                PowerConverter = val * 1000
+            Case 4
+                PowerConverter = val * 0.000001
+            Case 5 To 7
+                PowerConverter = PowerConverter(val, src, dest - 1) * 0.001
+            Case 8
+                PowerConverter = val * 1000000
+            Case 9 To 12
+                PowerConverter = PowerConverter(val, src, dest - 1) * 1000
+            Case 13
+                PowerConverter = val / 735.39875
+            Case 14
+                PowerConverter = val / 745.66272
+            Case 15
+                PowerConverter = val / 3516.8528
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                PowerConverter = val * 1000
+            Case 3
+                PowerConverter = val * 0.001
+            Case 4
+                PowerConverter = val * 1000000
+            Case 5 To 7
+                PowerConverter = PowerConverter(val, src, dest - 1) * 1000
+            Case 8
+                PowerConverter = val * 0.000001
+            Case 9 To 12
+                PowerConverter = PowerConverter(val, src, dest - 1) * 0.001
+            Case 13
+                PowerConverter = val * 735.39875
+            Case 14
+                PowerConverter = val * 745.66272
+            Case 15
+                PowerConverter = val * 3516.8528
+        End Select
+    Else
+        tmp = PowerConverter(val, src, 1)
+        PowerConverter = PowerConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between Pressure units
+'To chose source and destination units (default destination = 1 [Pascal])
+'1  : Pa (pascal)
+'2  : bar (bar)
+'3  : hPa (hectopascal)
+'4  : kPa (kilopascal)
+'5  : MPa (megapascal)
+'6  : mbar (millibar)
+'7  : at (technical atmosphere)
+'8  : atm (physical atmosphere)
+'9  : Nm-2 (Newton per square meter)
+'10 : psi (pound per square inch)
+'11 : Torr (Torr)
+'12 : mmHg (millimeter of mercury)
+'13 : mmH2O (millimeters water column)
+Public Function PressureConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 13) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 13) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        PressureConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                PressureConverter = val * 0.00001
+            Case 3, 6
+                PressureConverter = val * 0.01
+            Case 4, 5
+                PressureConverter = PressureConverter(val, src, dest - 1) * 0.1
+            Case 7
+                PressureConverter = val / 98066.5
+            Case 8
+                PressureConverter = val / 101325
+            Case 9
+                PressureConverter = val
+            Case 10
+                PressureConverter = val / 6894.757293168
+            Case 11, 12
+                PressureConverter = val / 133.322
+            Case 13
+                PressureConverter = val / 9.80665
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                PressureConverter = val * 100000
+            Case 3, 6
+                PressureConverter = val * 100
+            Case 4, 5
+                PressureConverter = PressureConverter(val, src - 1, dest) * 10
+            Case 7
+                PressureConverter = val * 98066.5
+            Case 8
+                PressureConverter = val * 101325
+            Case 9
+                PressureConverter = val
+            Case 10
+                PressureConverter = val * 6894.757293168
+            Case 11, 12
+                PressureConverter = val * 133.322
+            Case 13
+                PressureConverter = val * 9.80665
+        End Select
+    Else
+        tmp = PressureConverter(val, src, 1)
+        PressureConverter = PressureConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between radioactive units
+'To chose source and destination units (default destination is 1 : Bq [becquerel]):
+'1  : Bq (becquerel)
+'2  : Ci (curie)
+'3  : PBq (petabecquerel)
+'4  : TBq (terabecquerel)
+'5  : GBq (gigabecquerel)
+'6  : MBq (megabecquerel)
+'7  : kBq (kilobecquerel)
+'8  : hBq (hectobecquerel)
+'9  : daBq (decabecquerel)
+'10 : dBq (decibecquerel)
+'11 : cBq (centibecquerel)
+'12 : mBq (millibecquerel)
+'13 : kCi (kilocurie)
+'14 : hCi (hectocurie)
+'15 : daCi (decacurie)
+'16 : dCi (decicurie)
+'17 : cCi (centicurie)
+'18 : mCi (millicurie)
+'19 : µCi (microcurie)
+'20 : pCi (picocurie)
+'21 : Rd (rutherford)
+'22 : dpm (disintegrations per minute)
+Public Function RadioactiveConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 22) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 22) Then
+        src = 1
+    End If
+
+    If (dest = src Or val = 0) Then
+        RadioactiveConverter = dest
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                RadioactiveConverter = val / 37000000000#
+            Case 3
+                RadioactiveConverter = val * 0.000000000000001
+            Case 4 To 7
+                RadioactiveConverter = RadioactiveConverter(val, src, dest - 1) * 1000
+            Case 8
+                RadioactiveConverter = val * 0.01
+            Case 9
+                RadioactiveConverter = val * 0.1
+            Case 10
+                RadioactiveConverter = val * 10
+            Case 11, 12, 14, 15, 17, 18
+                RadioactiveConverter = RadioactiveConverter(val, src, dest - 1) * 10
+            Case 13
+                RadioactiveConverter = val / 37000000000000#
+            Case 16
+                RadioactiveConverter = val / 3700000000#
+            Case 19
+                RadioactiveConverter = val / 37000
+            Case 20
+                RadioactiveConverter = val / 0.037
+            Case 21
+                RadioactiveConverter = val / 0.000001
+            Case 22
+                RadioactiveConverter = val * 60
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                RadioactiveConverter = val * 37000000000#
+            Case 3
+                RadioactiveConverter = val * 1E+15
+            Case 4 To 7
+                RadioactiveConverter = RadioactiveConverter(val, src, dest - 1) / 1000
+            Case 8
+                RadioactiveConverter = val * 100
+            Case 9
+                RadioactiveConverter = val * 10
+            Case 10
+                RadioactiveConverter = val * 0.1
+            Case 11, 12, 14, 15, 17, 18
+                RadioactiveConverter = RadioactiveConverter(val, src - 1, dest - 1) * 0.1
+            Case 13
+                RadioactiveConverter = val * 37000000000000#
+            Case 16
+                RadioactiveConverter = val * 3700000000#
+            Case 19
+                RadioactiveConverter = val * 37000
+            Case 20
+                RadioactiveConverter = val * 0.037
+            Case 21
+                RadioactiveConverter = val * 1000000
+            Case 22
+                RadioactiveConverter = val / 60
+        End Select
+    Else
+        tmp = RadioactiveConverter(val, src, 1)
+        RadioactiveConverter = RadioactiveConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between speed units
+'To chose source and destination units (default destination is 1 : mps [meters per second]):
+'1  : mps (meters per second)
+'2  : kph (kilometer per hour)
+'3  : kps (kilometer per second)
+'4  : m/min (meters per minute)
+'5  : mps (miles per second)
+'6  : mph (miles per hour)
+'7  : fps (foot per second)
+'8  : ft/min (foot per minute)
+'9  : sec/km (second per kilometer)
+'10 : sec/hm (second per 100 meters)
+'11 : kt (knot)
+'12 : seamiles/hour (nautical mile per hour)
+'13 : c (celerity/speed of light)
+'14 : Ma (Mach speed/speed of sound in the air)
+Public Function SpeedConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 14) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 14) Then
+        src = 1
+    End If
+
+    If (dest = src Or val = 0) Then
+        SpeedConverter = dest
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                SpeedConverter = val * 3.6
+            Case 3
+                SpeedConverter = val * 0.001
+            Case 4
+                SpeedConverter = val * 60
+            Case 5
+                SpeedConverter = val / 1609.344
+            Case 6
+                SpeedConverter = val / 0.44704
+            Case 7
+                SpeedConverter = val * 3.28084
+            Case 8
+                SpeedConverter = val * 196.8504
+            Case 9
+                SpeedConverter = val * 1000
+            Case 10
+                SpeedConverter = val * 100
+            Case 11
+                SpeedConverter = val / 0.51444444444
+            Case 12
+                SpeedConverter = val / 0.51444
+            Case 13
+                SpeedConverter = val / 299792458
+            Case 14
+                SpeedConverter = val / 340
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                SpeedConverter = val / 3.6
+            Case 3
+                SpeedConverter = val * 1000
+            Case 4
+                SpeedConverter = val / 60
+            Case 5
+                SpeedConverter = val * 1609.344
+            Case 6
+                SpeedConverter = val * 0.44704
+            Case 7
+                SpeedConverter = val / 3.28084
+            Case 8
+                SpeedConverter = val / 196.8504
+            Case 9
+                SpeedConverter = val * 0.001
+            Case 10
+                SpeedConverter = val * 0.01
+            Case 11
+                SpeedConverter = val * 0.51444444444
+            Case 12
+                SpeedConverter = val * 0.51444
+            Case 13
+                SpeedConverter = val * 299792458
+            Case 14
+                SpeedConverter = val * 340
+        End Select
+    Else
+        tmp = SpeedConverter(val, src, 1)
+        SpeedConverter = SpeedConverter(tmp, 1, dest)
     End If
 End Function
 
@@ -920,14 +2077,14 @@ Public Function RomanToArabic(ByVal roman As String) As Long
     End If
 End Function
 
-'Function to convert temperature between units (Kelvin, Celsius, Fahreneit
+'Function to convert between temperature units (Kelvin, Celsius, Fahreneit
 'To chose source and destination units (default dest = 1 [celsius]) :
 '1 : Celsius
 '2 : Kelvin
 '3 : Fahrenheit
 '4 : Rankine
 '5 : Reaumur
-Public Function TemperatureConversion(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Single
+Public Function TemperatureConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Single
     Dim tmp As Double
 
     If (dest < 1 Or dest > 5) Then
@@ -939,31 +2096,264 @@ Public Function TemperatureConversion(ByVal val As Double, ByVal src As Integer,
     End If
 
     If (src = dest) Then
-        TemperatureConversion = val
+        TemperatureConverter = val
     ElseIf (src = 1) Then
         Select Case dest
             Case 2
-                TemperatureConversion = val + 273.15
+                TemperatureConverter = val + 273.15
             Case 3
-                TemperatureConversion = (val * 1.8) + 32
+                TemperatureConverter = (val * 1.8) + 32
             Case 4
-                TemperatureConversion = (val * 1.8) + 491.67
+                TemperatureConverter = (val * 1.8) + 491.67
             Case 5
-                TemperatureConversion = val * 0.8
+                TemperatureConverter = val * 0.8
         End Select
     ElseIf (dest = 1) Then
         Select Case src
             Case 2
-                TemperatureConversion = val - 273.15
+                TemperatureConverter = val - 273.15
             Case 3
-                TemperatureConversion = IIf(val = 32, 0, (val - 32) / 1.8)
+                TemperatureConverter = IIf(val = 32, 0, (val - 32) / 1.8)
             Case 4
-                TemperatureConversion = IIf(val = 491.67, 0, (val - 491.67) / 1.8)
+                TemperatureConverter = IIf(val = 491.67, 0, (val - 491.67) / 1.8)
             Case 5
-                TemperatureConversion = val * 1.25
+                TemperatureConverter = val * 1.25
         End Select
     Else
-        tmp = TemperatureConversion(val, src, 1)
-        TemperatureConversion = TemperatureConversion(tmp, 1, dest)
+        tmp = TemperatureConverter(val, src, 1)
+        TemperatureConverter = TemperatureConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between volume units
+'To chose source and destination units (default destination is 1 : l [liter]):
+'1  : l(liter)
+'2  : m3 (cubic meter)
+'3  : kl (kiloliter)
+'4  : hl (hectoliter)
+'5  : dal (decaliter)
+'6  : dl (deciliter)
+'7  : cl (centiliter)
+'8  : ml (milliliter)
+'9  : km3 (cubic meter)
+'10 : hm3 (cubic hectometer)
+'11 : dam3 (cubic decameter)
+'12 : dm3 (cubic decimeter)
+'13 : cm3 (cubic centimeter)
+'14 : mm3 (cubic millimeter)
+'15 : ft3 (cubic foot)
+'16 : in3 (cubic inch)
+'17 : gallon (imperial gallon)
+'18 : pint (pint)
+'19 : gallon (U.S. liquid gallon)
+'20 : pint (U.S. liquid pint)
+'21 : fl.oz. (fluid ounce)
+'22 : tbs (tablespoon)
+'23 : tsp (teaspoon)
+'24 : bbl (oil barrel)
+'25 : imp.bsh. (imperial bushel)
+'26 : U.S.bsh (U.S. bushel)
+'27 : cup (metric cup)
+'28 : imp.cup (imperial cup)
+'29 : US.cup (U.S. cup)
+Public Function VolumeConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 29) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 29) Then
+        src = 1
+    End If
+
+    If (dest = src Or val = 0) Then
+        VolumeConverter = dest
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2, 3
+                VolumeConverter = val * 0.001
+            Case 4, 5, 7, 8
+                VolumeConverter = VolumeConverter(val, src, dest - 1) * 10
+            Case 6
+                VolumeConverter = val * 10
+            Case 9
+                VolumeConverter = val * 0.000000000001
+            Case 10, 11, 13, 14
+                VolumeConverter = VolumeConverter(val, src, dest - 1) * 1000
+            Case 12
+                VolumeConverter = val
+            Case 15
+                VolumeConverter = val / 28.316846592
+            Case 16
+                VolumeConverter = val / 0.016387064
+            Case 17
+                VolumeConverter = val / 4.54609
+            Case 18
+                VolumeConverter = val / 0.56826125
+            Case 19
+                VolumeConverter = val / 3.785411784
+            Case 20
+                VolumeConverter = val / 0.473176473
+            Case 21
+                VolumeConverter = val / 0.03
+            Case 22
+                VolumeConverter = val / 0.015
+            Case 23
+                VolumeConverter = val * 200
+            Case 24
+                VolumeConverter = val / 158.9873
+            Case 25
+                VolumeConverter = val / 36.368722255958
+            Case 26
+                VolumeConverter = val / 35.23907016688
+            Case 27
+                VolumeConverter = val * 4
+            Case 28
+                VolumeConverter = val * 3.5195077544697
+            Case 29
+                VolumeConverter = val * 4.2267528377304
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2, 3
+                VolumeConverter = val * 1000
+            Case 4, 5, 7, 8
+                VolumeConverter = VolumeConverter(val, src, dest - 1) * 0.1
+            Case 6
+                VolumeConverter = val * 0.1
+            Case 9
+                VolumeConverter = val * 1000000000000#
+            Case 10, 11, 13, 14
+                VolumeConverter = VolumeConverter(val, src, dest - 1) * 0.001
+            Case 12
+                VolumeConverter = val
+            Case 15
+                VolumeConverter = val * 28.316846592
+            Case 16
+                VolumeConverter = val * 0.016387064
+            Case 17
+                VolumeConverter = val * 4.54609
+            Case 18
+                VolumeConverter = val * 0.56826125
+            Case 19
+                VolumeConverter = val * 3.785411784
+            Case 20
+                VolumeConverter = val * 0.473176473
+            Case 21
+                VolumeConverter = val * 0.03
+            Case 22
+                VolumeConverter = val * 0.015
+            Case 23
+                VolumeConverter = val * 0.005
+            Case 24
+                VolumeConverter = val * 158.9873
+            Case 25
+                VolumeConverter = val * 36.368722255958
+            Case 26
+                VolumeConverter = val * 35.23907016688
+            Case 27
+                VolumeConverter = val * 0.25
+            Case 28
+                VolumeConverter = val / 3.5195077544697
+            Case 29
+                VolumeConverter = val / 4.2267528377304
+        End Select
+    Else
+        tmp = VolumeConverter(val, src, 1)
+        VolumeConverter = VolumeConverter(tmp, 1, dest)
+    End If
+End Function
+
+'Function to convert between volumetric flow units
+'To chose source and destination units (default destination = 1 [liter per second])
+'1  : l/s (liter per second)
+'2  : m3/year (cubic meter per year)
+'3  : m3/h (cubic meter per hour)
+'4  : m3/min (cubic meter per hour)
+'5  : m3/s (cubic meter per second)
+'6  : Ml/day (megaliter per day)
+'7  : Ml/s (megaliter per second)
+'8  : L/min (liter per minute)
+'9  : ft3/year (cubic foot per year)
+'10 : ft3/s (cubic foot per second)
+'11 : gpd (imperial gallon per day)
+'12 : gpm (imperial gallon per minute)
+'13 : US gpd (US gallon per day)
+'14 : US gpm (US gallon per minute)
+Public Function VolumetricFlowConverter(ByVal val As Double, ByVal src As Integer, Optional ByVal dest As Integer = 1) As Double
+    Dim tmp As Double
+
+    If (dest < 1 Or dest > 18) Then
+        dest = 1
+    End If
+
+    If (src < 1 Or src > 18) Then
+        src = 1
+    End If
+
+    If (src = dest Or val = 0) Then
+        VolumetricFlowConverter = val
+    ElseIf (src = 1) Then
+        Select Case dest
+            Case 2
+                VolumetricFlowConverter = val * 31536
+            Case 3
+                VolumetricFlowConverter = val * 3.6
+            Case 4
+                VolumetricFlowConverter = val * 0.06
+            Case 5
+                VolumetricFlowConverter = val * 0.001
+            Case 6
+                VolumetricFlowConverter = val * 0.0864
+            Case 7
+                VolumetricFlowConverter = val * 0.000001
+            Case 8
+                VolumetricFlowConverter = val * 60
+            Case 9
+                VolumetricFlowConverter = val * 1113676.621
+            Case 10
+                VolumetricFlowConverter = val / 28.316846592
+            Case 11
+                VolumetricFlowConverter = val * 19005.304
+            Case 12
+                VolumetricFlowConverter = val / 0.0757683211
+            Case 13
+                VolumetricFlowConverter = val * 22820
+            Case 14
+                VolumetricFlowConverter = val / 0.06309
+        End Select
+    ElseIf (dest = 1) Then
+        Select Case src
+            Case 2
+                VolumetricFlowConverter = val / 31536
+            Case 3
+                VolumetricFlowConverter = val / 3.6
+            Case 4
+                VolumetricFlowConverter = val / 0.06
+            Case 5
+                VolumetricFlowConverter = val / 0.001
+            Case 6
+                VolumetricFlowConverter = val / 0.0864
+            Case 7
+                VolumetricFlowConverter = val / 0.000001
+            Case 8
+                VolumetricFlowConverter = val / 60
+            Case 9
+                VolumetricFlowConverter = val / 1113676.621
+            Case 10
+                VolumetricFlowConverter = val * 28.316846592
+            Case 11
+                VolumetricFlowConverter = val / 19005.304
+            Case 12
+                VolumetricFlowConverter = val * 0.0757683211
+            Case 13
+                VolumetricFlowConverter = val / 22820
+            Case 14
+                VolumetricFlowConverter = val * 0.06309
+        End Select
+    Else
+        tmp = VolumetricFlowConverter(val, src, 1)
+        VolumetricFlowConverter = VolumetricFlowConverter(tmp, 1, dest)
     End If
 End Function

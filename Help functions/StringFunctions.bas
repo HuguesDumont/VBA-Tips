@@ -46,7 +46,7 @@ Public Function RndChar(ByVal choice As Integer) As String
     rngs(16) = "0123456789"
     rngs(17) = "!" & Chr(34) & "#$%&'()*+,-./:;<=>?@[\]^_`{|}~€‚ƒ„…†‡ˆ‰Š‹Œ‘’“”•–—˜™š›œŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ"
 
-    RndChar = Mid(rngs(choice), intFunctions.IntRndBetween(1, Len(rngs(choice))), 1) 'Using the "intRndBetween" from "IntFunctions" here
+    RndChar = Mid(rngs(choice), IntFunctions.IntRndBetween(1, Len(rngs(choice))), 1) 'Using the "intRndBetween" from "IntFunctions" here
 End Function
 
 'sub to sort an array of string in lexicogrpahic order (using extended ascii table values of char in ascending order)
@@ -268,7 +268,7 @@ Public Function PosFirstLetter(ByVal str As String) As Long
     
     PosFirstLetter = 1
     While (PosFirstLetter <= Len(str))
-        chara = Asc(Mid(str, PosFirstLetter, 1))
+        chara = asc(Mid(str, PosFirstLetter, 1))
         If ((chara >= 65 And chara <= 90) Or (chara >= 97 And chara <= 122)) Then Exit Function
         PosFirstLetter = PosFirstLetter + 1
     Wend
