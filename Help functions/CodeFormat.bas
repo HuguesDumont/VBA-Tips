@@ -1,25 +1,25 @@
 Attribute VB_Name = "CodeFormat"
-'To use procedures defined in this module, you need to activate the references :
-'- Microsoft Visual Basic For Applications Extensibility 5.3
-'- Microsoft VBScript Regular Expressions 5.0
+' To use procedures defined in this module, you need to activate the references :
+' - Microsoft Visual Basic For Applications Extensibility 5.3
+' - Microsoft VBScript Regular Expressions 5.0
 Option Explicit
 
 Private tabSpaces As String 'String representing the tabulations spaces
 
-'Add an element to array
-'Parameters :
-'- arr      : the array where to add the element
-'- val      : the element to add
+' Add an element to array
+' Parameters :
+' - arr      : the array where to add the element
+' - val      : the element to add
 Private Sub AddArray(ByRef arr As Variant, ByVal val As Variant)
     ReDim Preserve arr(0 To UBound(arr) + 1) As Variant
     arr(UBound(arr)) = val
 End Sub
 
-'Add x tabulations at beginning of string
-'Parameters :
-'- str      : the string to add tabs
-'- x        : the number of tabulations to add
-'Returns : string
+' Add x tabulations at beginning of string
+' Parameters :
+' - str      : the string to add tabs
+' - x        : the number of tabulations to add
+' Returns : string
 Private Function AddTabs(ByVal str As String, ByVal x As Integer) As String
     If (tabSpaces = "") Then
         tabSpaces = "    "
@@ -31,9 +31,9 @@ Private Function AddTabs(ByVal str As String, ByVal x As Integer) As String
     AddTabs = str
 End Function
 
-'Correct blank lines in a module
-'Parameters :
-'- moduleName : the module name
+' Correct blank lines in a module
+' Parameters :
+' - moduleName : the module name
 Public Sub BlankLineCorrection(ByVal moduleName As String)
     Dim codeMod As CodeModule
     Dim i As Long
@@ -60,16 +60,16 @@ Public Sub BlankLineCorrection(ByVal moduleName As String)
                 .InsertLines i, ""
             End If
         Next i
-        While (Len(Trim(.Lines(1, 1))) = 0)
+        While ((Len(Trim(.Lines(1, 1))) = 0) And (.CountOfLines <> 0))
             .DeleteLines 1, 1
         Wend
     End With
 End Sub
 
-'Check if a module name follow convention
-'Parameters :
-'- moduleName : the module name
-'Returns : string containing description of all problems in the module name format
+' Check if a module name follow convention
+' Parameters :
+' - moduleName : the module name
+' Returns : string containing description of all problems in the module name format
 Public Function CheckModuleName(ByVal moduleName As String) As String
     Dim regModuleName As New VBScript_RegExp_55.RegExp
 
@@ -83,10 +83,10 @@ Public Function CheckModuleName(ByVal moduleName As String) As String
     End If
 End Function
 
-'Check procedure length
-'Parameters :
-'- moduleName : the module name
-'Returns : string with all procedures too long
+' Check procedure length
+' Parameters :
+' - moduleName : the module name
+' Returns : string with all procedures too long
 Public Function CheckProcLength(ByVal moduleName As String) As String
     Dim codeMod As CodeModule
     Dim i As Long, count As Long
@@ -116,11 +116,11 @@ Public Function CheckProcLength(ByVal moduleName As String) As String
     End With
 End Function
 
-'Check for non used procedures and unspecified scope procedures
-'If procedure is private then check in module only, else check in project
-'Parameters :
-'- moduleName : the module name
-'Returns : all problems of procedures names in module (name format; unused procedure ; missing scope)
+' Check for non used procedures and unspecified scope procedures
+' If procedure is private then check in module only, else check in project
+' Parameters :
+' - moduleName : the module name
+' Returns : all problems of procedures names in module (name format; unused procedure ; missing scope)
 Public Function CheckProcedureNames(ByVal moduleName As String) As String
     Dim found As Boolean
     Dim codeMod As CodeModule, modulecode As CodeModule
@@ -129,20 +129,19 @@ Public Function CheckProcedureNames(ByVal moduleName As String) As String
     Dim trimLine As String, procedureName As String
     Dim projComp As VBComponent
 
-Set codeMod = ThisWorkbook.VBProject.VBComponents(moduleName).CodeModule
-
-regProcName.Pattern = "^([A-Z][a-zA-Z]([\w])*)$"
-With codeMod
-For i = .CountOfDeclarationLines To .CountOfLines
-    trimLine = Trim(.Lines(i, 1))
-    If (IsProcedure(trimLine)) Then
-        found = False
-        procedureName = GetProcedureName(trimLine)
-        If (Len(procedureName) > 30) Then
-                CheckProcedureNames = CheckProcedureNames & "- The name of procedure " & procedureName & " in module " & moduleName & " is too long (<30 characters) : " & Len(procedureName) & "." _
-                        & Chr(13)
-            End If
-            If (Not regProcName.test(procedureName)) Then
+    Set codeMod = ThisWorkbook.VBProject.VBComponents(moduleName).CodeModule
+    
+    regProcName.Pattern = "^([A-Z][a-zA-Z]([\w])*)$"
+    With codeMod
+    For i = .CountOfDeclarationLines To .CountOfLines
+        trimLine = Trim(.Lines(i, 1))
+        If (IsProcedure(trimLine)) Then
+            found = False
+            procedureName = GetProcedureName(trimLine)
+            If (Len(procedureName) > 30) Then
+                    CheckProcedureNames = CheckProcedureNames & "- The name of procedure " & procedureName & " in module " & moduleName & " is too long (<30 characters) : " & Len(procedureName) & "." & Chr(13)
+                End If
+                If (Not regProcName.test(procedureName)) Then
                     CheckProcedureNames = CheckProcedureNames & "- The name of procedure " & procedureName & " in module " & moduleName & " doesn't comply with convention " & _
                             "^([A-Z][a-zA-Z]([a-ZA-Z0-9]){1,28})$" & Chr(13)
                 End If
@@ -170,7 +169,7 @@ For i = .CountOfDeclarationLines To .CountOfLines
     End With
 End Function
 
-'Function to correct comments in a module
+' Function to correct comments in a module
 Public Sub CommentCorrection(ByVal moduleName As String)
     Dim codeMod As CodeModule
     Dim count As Integer
@@ -182,7 +181,7 @@ Public Sub CommentCorrection(ByVal moduleName As String)
     With codeMod
         For i = 1 To .CountOfLines
             codeLine = .Lines(i, 1)
-            If (StartWith(.Lines(i, 1), "'")) Then
+            If (StartWith(.Lines(i, 1), "'", True)) Then
                 If (Len(codeLine) = 1) Then
                     .DeleteLines i
                     i = i - 1
@@ -194,7 +193,7 @@ Public Sub CommentCorrection(ByVal moduleName As String)
     End With
 End Sub
 
-'Function to copy all procedures within a module (including comments) in an array
+' Function to copy all procedures within a module (including comments) in an array
 Public Function CopyModuleProc(ByVal moduleName As String) As Variant
     Dim i As Long
     Dim tmpArray As Variant
@@ -206,15 +205,15 @@ Public Function CopyModuleProc(ByVal moduleName As String) As Variant
     CopyModuleProc = tmpArray
 End Function
 
-'Function to get all procedure text (including comments)
+' Function to get all procedure text (including comments)
 Public Function CopyProcedure(ByVal procName As String, ByVal moduleName As String) As String
     With ThisWorkbook.VBProject.VBComponents(moduleName).CodeModule
         CopyProcedure = .Lines(.ProcStartLine(procName, vbext_pk_Proc), .ProcCountLines(procName, vbext_pk_Proc))
     End With
 End Function
 
-'Function to correct the indentation of a specific line.
-'The count paramater defines the number of indentation on the previous line
+' Function to correct the indentation of a specific line.
+' The count paramater defines the number of indentation on the previous line
 Private Function CorrectLineIndent(ByVal codeLine As String, ByRef count As Integer) As String
     codeLine = Trim(codeLine)
 
@@ -260,7 +259,7 @@ Private Function CorrectLineIndent(ByVal codeLine As String, ByRef count As Inte
     End If
 End Function
 
-'Function to check for Next with var missing
+' Function to check for Next with var missing
 Public Sub CorrectNext(ByVal moduleName As String)
     Dim codeMod As CodeModule
     Dim i As Long
@@ -288,7 +287,7 @@ Public Sub CorrectNext(ByVal moduleName As String)
     End With
 End Sub
 
-'Function to get number of occurences of string findStr in string str
+' Function to get number of occurences of string findStr in string str
 Private Function CountOccurences(ByVal str As String, ByVal findStr As String, Optional ByVal withCase As Boolean = True) As Long
     Dim i As Long
 
@@ -302,7 +301,7 @@ Private Function CountOccurences(ByVal str As String, ByVal findStr As String, O
     Next i
 End Function
 
-'Function to count tabulations based on defined tab spaces
+' Function to count tabulations based on defined tab spaces
 Private Function CountTabulations(ByVal codeLine As String) As Integer
     Dim i As Long
 
@@ -319,7 +318,7 @@ Private Function CountTabulations(ByVal codeLine As String) As Integer
     Wend
 End Function
 
-'Function to check if string ends with other string (str ends with ending) (no trim)
+' Function to check if string ends with other string (str ends with ending) (no trim)
 Private Function EndWith(ByVal str As String, ByVal ending As String, Optional ByVal withCase As Boolean = True) As Boolean
     If (Len(ending) > Len(str)) Then
         EndWith = False
@@ -330,27 +329,27 @@ Private Function EndWith(ByVal str As String, ByVal ending As String, Optional B
     End If
 End Function
 
-'Function to format a comment correctly
+' Function to format a comment correctly
 Private Function FormatComment(ByVal str As String) As String
     FormatComment = "'" & Trim(Mid(str, 2))
     If (Len(FormatComment) > 2) Then
-        FormatComment = "'" & UCase(Mid(FormatComment, 2, 1)) & Mid(FormatComment, 3)
+        FormatComment = "' " & UCase(Mid(FormatComment, 2, 1)) & Mid(FormatComment, 3)
     End If
 End Function
 
-'Function to format the code inside a module :
-'- Check if module name is conventional (^([A-Z][a-zA-Z]([a-ZA-Z0-9]){1,28})$)
-'- Sorting all procedures by name in lexicographical order (0-9->A-Z->a-z)
-'- Correcting the indentation
-'- Correcting comment case (first letter has to be upper case)
-'- Correcting blank lines
-'- Reorganizing var by types
-'- Correcting "Next" instruction without var
-'- Checking for non-used procedures, undefined procedure scope, incorrect procedure name (length > 30 and format <> ^([A-Z][a-zA-Z]([a-ZA-Z0-9]){1,28})$)
-'- Checking for procedures with more than 30 lines
-'- Cutting lines upper than X characters
-'-- Checking for non-used var
-'--- Checking for code duplication
+' Function to format the code inside a module :
+' - Check if module name is conventional (^([A-Z][a-zA-Z]([a-ZA-Z0-9]){1,28})$)
+' - Sorting all procedures by name in lexicographical order (0-9->A-Z->a-z)
+' - Correcting the indentation
+' - Correcting comment case (first letter has to be upper case)
+' - Correcting blank lines
+' - Reorganizing var by types
+' - Correcting "Next" instruction without var
+' - Checking for non-used procedures, undefined procedure scope, incorrect procedure name (length > 30 and format <> ^([A-Z][a-zA-Z]([a-ZA-Z0-9]){1,28})$)
+' - Checking for procedures with more than 30 lines
+' - Cutting lines upper than X characters
+' -- Checking for non-used var
+' --- Checking for code duplication
 Public Function FormatModule(ByVal moduleName As String, Optional ByVal spaceTab As Integer = 4, Optional ByVal maxLen As Integer = 200) As String
     Dim i As Integer
 
@@ -371,7 +370,7 @@ Public Function FormatModule(ByVal moduleName As String, Optional ByVal spaceTab
     FormatModule = FormatModule & CheckProcLength(moduleName)
 End Function
 
-'Function to format var declaration
+' Function to format var declaration
 Private Function FormatVar(ByVal codeLine As String) As String
     Dim i As Long
     Dim elem() As String, txt As String, chaine As String
@@ -409,7 +408,7 @@ Private Function FormatVar(ByVal codeLine As String) As String
     FormatVar = Mid(chaine, 1, Len(chaine) - 1)
 End Function
 
-'Function to get procedure name from code line
+' Function to get procedure name from code line
 Private Function GetProcedureName(ByVal codeLine As String) As String
     Dim procName As String
 
@@ -421,7 +420,7 @@ Private Function GetProcedureName(ByVal codeLine As String) As String
     GetProcedureName = Split(procName, "(")(0)
 End Function
 
-'Function to correct indentation of module
+' Function to correct indentation of module
 Public Sub IndentCorrection(ByVal moduleName As String)
     Dim codeMod As CodeModule
     Dim count As Integer, prevCount As Integer
@@ -429,8 +428,12 @@ Public Sub IndentCorrection(ByVal moduleName As String)
     Dim codeLine As String, curLine As String, prevLine As String, nextLine As String
 
     Set codeMod = ThisWorkbook.VBProject.VBComponents(moduleName).CodeModule
-
+    
     With codeMod
+        If (.CountOfLines = 0) Then
+            Exit Sub
+        End If
+        
         For i = 1 To .CountOfDeclarationLines
             .ReplaceLine i, Trim(.Lines(i, 1))
         Next i
@@ -458,33 +461,33 @@ Public Sub IndentCorrection(ByVal moduleName As String)
     End With
 End Sub
 
-'Function to check if line is var declaration (Dim and ReDim only)
+' Function to check if line is var declaration (Dim and ReDim only)
 Private Function IsDim(ByVal codeLine As String) As Boolean
     IsDim = StartWithList(codeLine, Array("Dim ", "ReDim "))
 End Function
 
-'Function to check if a string is a procedure declaration
+' Function to check if a string is a procedure declaration
 Private Function IsProcedure(ByVal codeLine As String) As Boolean
     IsProcedure = (StartWithList(codeLine, Array("Public Function ", "Private Function ", "Function ", "Public Sub ", "Private Sub ", "Sub ", "Friend ", _
             "Private Declare ", "Public Declare ", "Declare ")))
 End Function
 
-'Function to check if line is a tab label
+' Function to check if line is a tab label
 Private Function IsTabLabel(ByVal line As String) As Boolean
     IsTabLabel = (InStr(line, " ") = 0 And EndWith(line, ":"))
 End Function
 
-'Function to check if codeLine is For on one line
+' Function to check if codeLine is For on one line
 Private Function OneLineFor(ByVal codeLine As String) As Boolean
     OneLineFor = (StartWith(codeLine, "For ") And (InStr(codeLine, ":") <> 0))
 End Function
 
-'Function to check if codeLine is If Then on one line
+' Function to check if codeLine is If Then on one line
 Private Function OneLineIf(ByVal codeLine As String) As Boolean
     OneLineIf = (StartWith(codeLine, "If ") And Not EndWith(codeLine, "Then"))
 End Function
 
-'Function to reorganize var in a module
+' Function to reorganize var in a module
 Public Sub OrganizeVar(ByVal moduleName As String)
     Dim codeMod As CodeModule
     Dim i As Long, j As Long, k As Long, moduleEnd As Long
@@ -512,7 +515,7 @@ Public Sub OrganizeVar(ByVal moduleName As String)
     End With
 End Sub
 
-'Function to get position of first letter in string (returns 0 if there is no letter)
+' Function to get position of first letter in string (returns 0 if there is no letter)
 Private Function PosFirstLetter(ByVal str As String) As Long
     Dim chara As Integer
 
@@ -525,7 +528,7 @@ Private Function PosFirstLetter(ByVal str As String) As Long
     PosFirstLetter = 0
 End Function
 
-'Function to get all procedure names within a module as an Array
+' Function to get all procedure names within a module as an Array
 Public Function ProcNamesModule(ByVal moduleName As String) As Variant
     Dim codeMod As CodeModule
     Dim startLine As Long
@@ -545,12 +548,12 @@ Public Function ProcNamesModule(ByVal moduleName As String) As Variant
     ProcNamesModule = tmpArray
 End Function
 
-'Quick sort
+' Quick sort
 Private Sub QuickSort(ByRef arr As Variant)
     Call QuickSortRecursive(arr, 0, UBound(arr))
 End Sub
 
-'Recursive quick sort
+' Recursive quick sort
 Private Sub QuickSortRecursive(ByRef arr As Variant, ByVal leftIndex As Variant, ByVal rightIndex As Variant)
     Dim i As Variant, j As Variant, tmp As Variant, pivot As Variant
 
@@ -579,7 +582,7 @@ Private Sub QuickSortRecursive(ByRef arr As Variant, ByVal leftIndex As Variant,
     If i < rightIndex Then Call QuickSortRecursive(arr, i, rightIndex)
 End Sub
 
-'Function to sort (delete and add) all procedures within a module (including comments) sorted by lexicographical order
+' Function to sort (delete and add) all procedures within a module (including comments) sorted by lexicographical order
 Public Sub SortModuleProc(ByVal moduleName As String)
     Dim codeMod As CodeModule
     Dim procTxt As Variant, sortedProc As Variant
@@ -594,7 +597,7 @@ Public Sub SortModuleProc(ByVal moduleName As String)
     End With
 End Sub
 
-'Function to get all procedures within a module (including comments) sorted by lexicographical order
+' Function to get all procedures within a module (including comments) sorted by lexicographical order
 Public Function SortedModuleProc(ByVal moduleName As String) As Variant
     Dim i As Long
     Dim tmpArray As Variant
@@ -607,30 +610,35 @@ Public Function SortedModuleProc(ByVal moduleName As String) As Variant
     SortedModuleProc = tmpArray
 End Function
 
-'Function to check if string starts with other string (str starts with start) (no trim)
+' Function to check if string starts with other string (str starts with start) (no trim)
 Private Function StartWith(ByVal str As String, ByVal start As String, Optional ByVal withCase As Boolean = True) As Boolean
     StartWith = IIf(withCase, (Mid(str, 1, Len(start)) = start), (Mid(UCase(str), 1, Len(start)) = UCase(start)))
 End Function
 
-'Function to check if a string start with one of the elements in array
-Private Function StartWithList(ByVal str As String, ByVal arr As Variant) As Boolean
+' Function to check if a string start with one of the elements in array
+Private Function StartWithList(ByVal str As String, ByVal arr As Variant, Optional ByVal withCase As Boolean = True, Optional ByVal toTrim As Boolean = False) As Boolean
     Dim elem As Variant
 
     StartWithList = False
+    
+    If (toTrim) Then
+        str = Trim(str)
+    End If
+    
     For Each elem In arr
-        If (StartWith(str, CStr(elem))) Then
+        If (StartWith(str, CStr(elem), withCase)) Then
             StartWithList = True
             Exit Function
         End If
     Next elem
 End Function
 
-'Function to check if code line uses procedure or var
+' Function to check if code line uses procedure or var
 Private Function UsedCode(ByVal codeLine As String, ByVal codeName As String, Optional ByVal isProc As Boolean = True) As Boolean
     UsedCode = ((InStr(codeLine, codeName) > 0 And Not StartWith(codeLine, "'")) And ((isProc And (Not IsProcedure(codeLine))) Or (Not IsDim(codeLine))))
 End Function
 
-'Function to loop through module to check for procedure use
+' Function to loop through module to check for procedure use
 Private Function UsedInModule(ByVal projComp As VBComponent, ByVal procedureName As String, Optional ByVal isPrivate As Boolean = True, Optional ByVal moduleName As String = "") As Boolean
     Dim modulecode As CodeModule
     Dim j As Long
@@ -661,7 +669,7 @@ Private Function UsedInModule(ByVal projComp As VBComponent, ByVal procedureName
     End With
 End Function
 
-'Function to wrap a line at last space before maxLen character
+' Function to wrap a line at last space before maxLen character
 Private Function WrapLine(ByVal codeLine As String, ByVal maxLen As Long) As String
     Dim countString As Integer
     Dim i As Long
@@ -686,7 +694,7 @@ Top:
     End If
 End Function
 
-'Function to wrap lines upper than x characters in module
+' Function to wrap lines upper than x characters in module
 Public Sub WrapLines(ByVal moduleName As String, Optional ByVal maxLen As Integer = 200)
     Dim codeMod As CodeModule
     Dim j As Integer
