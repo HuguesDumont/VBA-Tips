@@ -15,6 +15,9 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+' Made by Hugues DUMONT
+' This project is still in development, therefore, there is only a basis of what the future project will be like
+
 Private Sub ChangeLength(ByRef ctrl As Control, ByVal up As Boolean, Optional ByVal limit As Long = 0)
     If (ctrl.value <> "") Then
         ctrl.value = IIf(up, IIf(CLng(ctrl.value) < limit, ctrl.value + 1, limit), IIf(CLng(ctrl.value) > 0, ctrl.value - 1, 0))
