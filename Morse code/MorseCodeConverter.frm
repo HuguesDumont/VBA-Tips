@@ -17,7 +17,7 @@ Attribute VB_Description = "A simple screen to convert your text to morse code a
 Option Explicit
 
 Private Sub UserForm_Initialize()
-    Call MorseCode.init
+    Call MorseCode.Init
 End Sub
 
 Private Sub textToMorseButton_Click()
